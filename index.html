@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FamilyLife - Gestion Familiale</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fef7f0 0%, #f3e7f1 100%);
+            color: #2c3e50;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 400px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: white;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 20px);
+            animation: slide 20s linear infinite;
+        }
+
+        @keyframes slide {
+            0% { transform: translateX(-50px) translateY(-50px); }
+            100% { transform: translateX(0px) translateY(0px); }
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.1);
+            padding: 8px 12px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff9a9e, #fecfef);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .week-overview {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .week-overview h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .day-card {
+            background: white;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #ff9a9e;
+        }
+
+        .day-card h4 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .event {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 0;
+            font-size: 0.85rem;
+        }
+
+        .event-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .work { background: #3498db; }
+        .adele { background: #e74c3c; }
+        .albane { background: #f39c12; }
+        .medical { background: #2ecc71; }
+        .activity { background: #9b59b6; }
+
+        .health-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .health-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .child-health {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .child-health h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vaccine-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .vaccine-item:last-child {
+            border-bottom: none;
+        }
+
+        .vaccine-status {
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .done { background: #d4edda; color: #155724; }
+        .upcoming { background: #fff3cd; color: #856404; }
+        .overdue { background: #f8d7da; color: #721c24; }
+
+        .shopping-list {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .add-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .add-item input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .add-item input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: transform 0.2s ease;
+        }
+
+        .add-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .list-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .list-item:hover {
+            background: #e9ecef;
+        }
+
+        .list-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .list-item.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .category-tag {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: auto;
+        }
+
+        .groceries { background: #d1ecf1; color: #0c5460; }
+        .pharmacy { background: #d4edda; color: #155724; }
+        .clothes { background: #f8d7da; color: #721c24; }
+
+        .documents-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .doc-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .doc-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .doc-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .pdf { background: #dc3545; }
+        .image { background: #28a745; }
+        .school { background: #007bff; }
+
+        .todo-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .todo-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        .assignee {
+            margin-left: auto;
+            padding: 4px 8px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 400px;
+            width: 100%;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            flex: 1;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .floating-add {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .floating-add:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 350px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: #667eea;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e9ecef;
+            color: #2c3e50;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+            z-index: 3000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 480px) {
+            .app-container {
+                max-width: 100%;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>🏠 FamilyLife</h1>
+            <div class="user-info">
+                <div class="user-profile">
+                    <div class="avatar">M</div>
+                    <span>Mathieu</span>
+                </div>
+
+            <!-- Notes Tab -->
+            <div id="notes-tab" class="tab-content">
+                <div class="notes-section" style="background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <h3 style="color: #2c3e50; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">📝 Gaslight Report</h3>
+                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 20px; font-style: italic;">
+                        Documentation des comportements et incidents concernant le père d'Adèle
+                    </p>
+                    
+                    <!-- Add new note -->
+                    <div style="background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                        <h4 style="margin-bottom: 10px; color: #2c3e50;">➕ Nouvelle note</h4>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <input type="date" id="note-date" style="padding: 8px; border: 1px solid #ddd; border-radius: 5px;" />
+                            <textarea id="note-content" placeholder="Décrire l'incident, comportement ou remarque..." rows="4" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; resize: vertical;"></textarea>
+                            <button onclick="addNote()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">Ajouter la note</button>
+                        </div>
+                    </div>
+
+                    <!-- Notes list -->
+                    <div id="notes-list">
+                        <div class="note-item" style="background: #f8f9fa; border-left: 4px solid #dc3545; padding: 15px; margin-bottom: 15px; border-radius: 0 10px 10px 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <strong style="color: #dc3545;">📅 28 juillet 2025</strong>
+                                <span style="background: #dc3545; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem;">PRIORITAIRE</span>
+                            </div>
+                            <p style="margin-bottom: 8px; line-height: 1.4;">
+                                N'a pas ramené Adèle à l'heure convenue (20h au lieu de 18h). Aucun appel pour prévenir du retard. Adèle était fatiguée et stressée.
+                            </p>
+                            <div style="font-size: 0.8rem; color: #666; font-style: italic;">
+                                Ajouté par Steph
+                            </div>
+                        </div>
+
+                        <div class="note-item" style="background: #f8f9fa; border-left: 4px solid #ffc107; padding: 15px; margin-bottom: 15px; border-radius: 0 10px 10px 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <strong style="color: #856404;">📅 25 juillet 2025</strong>
+                                <span style="background: #ffc107; color: #856404; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem;">MODÉRÉ</span>
+                            </div>
+                            <p style="margin-bottom: 8px; line-height: 1.4;">
+                                Critique négative sur notre organisation familiale devant Adèle. "Votre maison est toujours en désordre". Adèle semblait gênée.
+                            </p>
+                            <div style="font-size: 0.8rem; color: #666; font-style: italic;">
+                                Ajouté par Mathieu
+                            </div>
+                        </div>
+
+                        <div class="note-item" style="background: #f8f9fa; border-left: 4px solid #28a745; padding: 15px; margin-bottom: 15px; border-radius: 0 10px 10px 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <strong style="color: #155724;">📅 22 juillet 2025</strong>
+                                <span style="background: #28a745; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem;">INFO</span>
+                            </div>
+                            <p style="margin-bottom: 8px; line-height: 1.4;">
+                                Questions insistantes sur nos finances et notre vie privée lors de la récupération d'Adèle. "Vous arrivez à joindre les deux bouts ?"
+                            </p>
+                            <div style="font-size: 0.8rem; color: #666; font-style: italic;">
+                                Ajouté par Steph
+                            </div>
+                        </div>
+
+                        <div class="note-item" style="background: #f8f9fa; border-left: 4px solid #dc3545; padding: 15px; margin-bottom: 15px; border-radius: 0 10px 10px 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <strong style="color: #dc3545;">📅 18 juillet 2025</strong>
+                                <span style="background: #dc3545; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem;">PRIORITAIRE</span>
+                            </div>
+                            <p style="margin-bottom: 8px; line-height: 1.4;">
+                                A dit à Adèle que "Maman et Mathieu ne savent pas s'occuper d'un bébé" en parlant d'Albane. Adèle nous a rapporté ces propos en pleurant.
+                            </p>
+                            <div style="font-size: 0.8rem; color: #666; font-style: italic;">
+                                Ajouté par Steph
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Export options -->
+                    <div style="margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 10px;">
+                        <h4 style="margin-bottom: 10px; color: #2c3e50;">📤 Export</h4>
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="exportNotes('pdf')" style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;">PDF</button>
+                            <button onclick="exportNotes('email')" style="background: #007bff; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;">Email</button>
+                            <button onclick="exportNotes('legal')" style="background: #6c757d; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;">Format légal</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <div style="font-size: 0.9rem; opacity: 0.8;">📱 Synchronisé</div>
+                <div class="user-profile">
+                    <div class="avatar" style="background: linear-gradient(45deg, #a8edea, #fed6e3);">S</div>
+                    <span>Steph</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Planning Tab -->
+            <div id="planning-tab" class="tab-content active">
+                <div class="week-overview">
+                    <h3>📅 Semaine en un coup d'œil</h3>
+                    <div class="day-card">
+                        <h4>Lundi 4 Août</h4>
+                        <div class="event"><div class="event-dot work"></div>Mathieu: Travail 8h-17h</div>
+                        <div class="event"><div class="event-dot adele"></div>Adèle chez Papa</div>
+                        <div class="event"><div class="event-dot albane"></div>Albane chez nounou 7h30-18h</div>
+                    </div>
+                    <div class="day-card">
+                        <h4>Mardi 5 Août</h4>
+                        <div class="event"><div class="event-dot work"></div>Steph: Travail 9h-16h</div>
+                        <div class="event"><div class="event-dot medical"></div>RDV pédiatre Albane 14h</div>
+                        <div class="event"><div class="event-dot activity"></div>Piscine Adèle 17h</div>
+                    </div>
+                    <div class="day-card">
+                        <h4>Mercredi 6 Août</h4>
+                        <div class="event"><div class="event-dot adele"></div>Adèle: Centre aéré</div>
+                        <div class="event"><div class="event-dot work"></div>Mathieu: Télétravail</div>
+                        <div class="event"><div class="event-dot albane"></div>Albane chez nounou (½ journée)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Tab -->
+            <div id="health-tab" class="tab-content">
+                <div class="health-section">
+                    <h3>🏥 Santé & Vaccins</h3>
+                    
+                    <div class="child-health">
+                        <h4>👧 Adèle (7 ans)</h4>
+                        <div class="vaccine-item">
+                            <span>ROR (Rappel)</span>
+                            <span class="vaccine-status done">✓ Fait</span>
+                        </div>
+                        <div class="vaccine-item">
+                            <span>DTP-Coqueluche</span>
+                            <span class="vaccine-status upcoming">📅 Nov 2025</span>
+                        </div>
+                        <div class="vaccine-item">
+                            <span>Visite dentiste</span>
+                            <span class="vaccine-status overdue">⚠️ En retard</span>
+                        </div>
+                    </div>
+
+                    <div class="child-health">
+                        <h4>👶 Albane (10 mois)</h4>
+                        <div class="vaccine-item">
+                            <span>Hexavalent (3ème injection)</span>
+                            <span class="vaccine-status done">✓ Fait</span>
+                        </div>
+                        <div class="vaccine-item">
+                            <span>ROR (1ère injection)</span>
+                            <span class="vaccine-status upcoming">📅 Oct 2025</span>
+                        </div>
+                        <div class="vaccine-item">
+                            <span>Visite 12 mois</span>
+                            <span class="vaccine-status upcoming">📅 Sep 2025</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shopping Tab -->
+            <div id="shopping-tab" class="tab-content">
+                <div class="shopping-list">
+                    <h3>🛒 Liste de courses partagée</h3>
+                    
+                    <div class="add-item">
+                        <input type="text" id="new-item" placeholder="Ajouter un article..." />
+                        <button class="add-btn" onclick="addShoppingItem()">+</button>
+                    </div>
+
+                    <div id="shopping-items">
+                        <div class="list-item">
+                            <input type="checkbox" onchange="toggleItem(this)" />
+                            <span>Lait bébé (Gallia)</span>
+                            <span class="category-tag pharmacy">Pharmacie</span>
+                        </div>
+                        <div class="list-item">
+                            <input type="checkbox" onchange="toggleItem(this)" />
+                            <span>Pain de mie</span>
+                            <span class="category-tag groceries">Courses</span>
+                        </div>
+                        <div class="list-item completed">
+                            <input type="checkbox" checked onchange="toggleItem(this)" />
+                            <span>Chaussures Adèle T.32</span>
+                            <span class="category-tag clothes">Vêtements</span>
+                        </div>
+                        <div class="list-item">
+                            <input type="checkbox" onchange="toggleItem(this)" />
+                            <span>Yaourts nature</span>
+                            <span class="category-tag groceries">Courses</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents Tab -->
+            <div id="documents-tab" class="tab-content">
+                <div class="documents-section">
+                    <h3>📋 Documents partagés</h3>
+                    
+                    <!-- Upload Section -->
+                    <div style="background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); border-radius: 10px; padding: 20px; margin-bottom: 20px; border: 2px dashed #667eea;">
+                        <h4 style="margin-bottom: 15px; color: #2c3e50; text-align: center;">📤 Télécharger un document</h4>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <input type="file" id="file-upload" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" style="display: none;" onchange="handleFileUpload(this)">
+                            <button onclick="document.getElementById('file-upload').click()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 20px; border-radius: 25px; cursor: pointer; font-weight: bold; transition: transform 0.2s;">
+                                📎 Choisir un fichier
+                            </button>
+                            <div style="text-align: center; font-size: 0.8rem; color: #666;">
+                                Formats acceptés: PDF, Images, Word
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="doc-item">
+                        <div class="doc-icon pdf">📄</div>
+                        <div>
+                            <div style="font-weight: bold;">Certificat médical Adèle</div>
+                            <div style="font-size: 0.8rem; color: #666;">Sport - Valide jusqu'en juin 2026</div>
+                        </div>
+                    </div>
+                    
+                    <div class="doc-item">
+                        <div class="doc-icon school">🏫</div>
+                        <div>
+                            <div style="font-weight: bold;">Bulletin scolaire T3</div>
+                            <div style="font-size: 0.8rem; color: #666;">Adèle - CE1 - Très bien</div>
+                        </div>
+                    </div>
+                    
+                    <div class="doc-item">
+                        <div class="doc-icon image">🖼️</div>
+                        <div>
+                            <div style="font-weight: bold;">Carnet de santé Albane</div>
+                            <div style="font-size: 0.8rem; color: #666;">Photo des pages vaccins</div>
+                        </div>
+                    </div>
+                    
+                    <div class="doc-item">
+                        <div class="doc-icon pdf">📄</div>
+                        <div>
+                            <div style="font-weight: bold;">Assurance scolaire</div>
+                            <div style="font-size: 0.8rem; color: #666;">Année 2025-2026</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Todo Tab -->
+            <div id="todo-tab" class="tab-content">
+                <div class="todo-section">
+                    <h3>✅ To-do parentale</h3>
+                    
+                    <div class="todo-item">
+                        <input type="checkbox" onchange="toggleTodo(this)" />
+                        <div>
+                            <div style="font-weight: bold;">Inscrire Adèle à la cantine</div>
+                            <div style="font-size: 0.8rem; color: #666;">Pour septembre 2025</div>
+                        </div>
+                        <div class="assignee">Steph</div>
+                    </div>
+                    
+                    <div class="todo-item">
+                        <input type="checkbox" onchange="toggleTodo(this)" />
+                        <div>
+                            <div style="font-weight: bold;">Réserver pédiatre Albane</div>
+                            <div style="font-size: 0.8rem; color: #666;">Visite 12 mois</div>
+                        </div>
+                        <div class="assignee">Mathieu</div>
+                    </div>
+                    
+                    <div class="todo-item">
+                        <input type="checkbox" onchange="toggleTodo(this)" />
+                        <div>
+                            <div style="font-weight: bold;">Acheter fournitures scolaires</div>
+                            <div style="font-size: 0.8rem; color: #666;">Liste CE2 reçue</div>
+                        </div>
+                        <div class="assignee">Mathieu</div>
+                    </div>
+                    
+                    <div class="todo-item" style="opacity: 0.6;">
+                        <input type="checkbox" checked onchange="toggleTodo(this)" />
+                        <div>
+                            <div style="font-weight: bold; text-decoration: line-through;">Rendez-vous dentiste Adèle</div>
+                            <div style="font-size: 0.8rem; color: #666;">Fait le 1er août</div>
+                        </div>
+                        <div class="assignee">Steph</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('planning')">
+                <div class="nav-icon">📅</div>
+                <div class="nav-label">Planning</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('health')">
+                <div class="nav-icon">🏥</div>
+                <div class="nav-label">Santé</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('shopping')">
+                <div class="nav-icon">🛒</div>
+                <div class="nav-label">Courses</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('documents')">
+                <div class="nav-icon">📋</div>
+                <div class="nav-label">Documents</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('todo')">
+                <div class="nav-icon">✅</div>
+                <div class="nav-label">To-do</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('notes')">
+                <div class="nav-icon">📝</div>
+                <div class="nav-label">Notes</div>
+            </div>
+        </div>
+
+        <button class="floating-add" onclick="openAddModal()">+</button>
+    </div>
+
+    <!-- Modal for adding new items -->
+    <div id="add-modal" class="modal">
+        <div class="modal-content">
+            <h3>➕ Ajouter un élément</h3>
+            <div class="form-group">
+                <label>Type :</label>
+                <select id="item-type">
+                    <option value="event">Événement</option>
+                    <option value="medical">Rendez-vous médical</option>
+                    <option value="task">Tâche</option>
+                    <option value="document">Document</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Titre :</label>
+                <input type="text" id="item-title" placeholder="Ex: RDV pédiatre..." />
+            </div>
+            <div class="form-group">
+                <label>Date :</label>
+                <input type="date" id="item-date" />
+            </div>
+            <div class="form-group">
+                <label>Assigné à :</label>
+                <select id="item-assignee">
+                    <option value="both">Mathieu & Steph</option>
+                    <option value="mathieu">Mathieu</option>
+                    <option value="steph">Steph</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Notes :</label>
+                <textarea id="item-notes" rows="3" placeholder="Détails supplémentaires..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeAddModal()">Annuler</button>
+                <button class="btn btn-primary" onclick="addNewItem()">Ajouter</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <span id="notification-text"></span>
+    </div>
+
+    <script>
+        // Navigation between tabs
+        function switchTab(tabName) {
+            // Hide all tab contents
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Update nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        // Shopping list functions
+        function addShoppingItem() {
+            const input = document.getElementById('new-item');
+            const text = input.value.trim();
+            
+            if (text) {
+                const itemsContainer = document.getElementById('shopping-items');
+                const newItem = document.createElement('div');
+                newItem.className = 'list-item';
+                newItem.innerHTML = `
+                    <input type="checkbox" onchange="toggleItem(this)" />
+                    <span>${text}</span>
+                    <span class="category-tag groceries">Courses</span>
+                `;
+                itemsContainer.insertBefore(newItem, itemsContainer.firstChild);
+                input.value = '';
+                showNotification('Article ajouté à la liste !');
+            }
+        }
+
+        function toggleItem(checkbox) {
+            const listItem = checkbox.parentElement;
+            if (checkbox.checked) {
+                listItem.classList.add('completed');
+                showNotification('Article coché !');
+            } else {
+                listItem.classList.remove('completed');
+            }
+        }
+
+        // Todo functions
+        function toggleTodo(checkbox) {
+            const todoItem = checkbox.parentElement;
+            if (checkbox.checked) {
+                todoItem.style.opacity = '0.6';
+                todoItem.querySelector('div div').style.textDecoration = 'line-through';
+                showNotification('Tâche terminée !');
+            } else {
+                todoItem.style.opacity = '1';
+                todoItem.querySelector('div div').style.textDecoration = 'none';
+            }
+        }
+
+        // Modal functions
+        function openAddModal() {
+            document.getElementById('add-modal').style.display = 'block';
+        }
+
+        function closeAddModal() {
+            document.getElementById('add-modal').style.display = 'none';
+            // Reset form
+            document.getElementById('item-title').value = '';
+            document.getElementById('item-date').value = '';
+            document.getElementById('item-notes').value = '';
+        }
+
+        function addNewItem() {
+            const title = document.getElementById('item-title').value;
+            const type = document.getElementById('item-type').value;
+            const date = document.getElementById('item-date').value;
+            const assignee = document.getElementById('item-assignee').value;
+            const notes = document.getElementById('item-notes').value;
+
+            if (title && date) {
+                // Add logic to append to appropriate section based on type
+                closeAddModal();
+                showNotification('Nouvel élément ajouté !');
+            } else {
+                alert('Veuillez remplir au moins le titre et la date.');
+            }
+        }
+
+        // Notification function
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Add event listener for Enter key in shopping input
+        document.getElementById('new-item').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addShoppingItem();
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('add-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAddModal();
+            }
+        });
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date as default in modal and notes
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('item-date').value = today;
+            document.getElementById('note-date').value = today;
+            
+            // Show welcome notification
+            setTimeout(() => {
+                showNotification('👋 Bienvenue dans FamilyLife !');
+            }, 1000);
+        });
+
+        // Simulate real-time updates
+        setInterval(() => {
+            // Simulate sync indicator
+            const header = document.querySelector('.header h1');
+            header.innerHTML = '🏠 FamilyLife <span style="font-size: 0.7rem; opacity: 0.7;">🔄</span>';
+            
+            setTimeout(() => {
+                header.innerHTML = '🏠 FamilyLife <span style="font-size: 0.7rem; opacity: 0.7;">✓</span>';
+            }, 500);
+            
+            setTimeout(() => {
+                header.innerHTML = '🏠 FamilyLife';
+            }, 2000);
+        }, 30000);
+
+        // File upload handler
+        function handleFileUpload(input) {
+            const file = input.files[0];
+            if (file) {
+                const fileName = file.name;
+                const fileSize = (file.size / 1024 / 1024).toFixed(2);
+                showNotification(`📎 ${fileName} (${fileSize} MB) téléchargé !`);
+                
+                // Simulate adding to document list
+                setTimeout(() => {
+                    const docContainer = document.querySelector('.documents-section');
+                    const newDoc = document.createElement('div');
+                    newDoc.className = 'doc-item';
+                    newDoc.innerHTML = `
+                        <div class="doc-icon pdf">📄</div>
+                        <div>
+                            <div style="font-weight: bold;">${fileName}</div>
+                            <div style="font-size: 0.8rem; color: #666;">Ajouté le ${new Date().toLocaleDateString('fr-FR')}</div>
+                        </div>
+                    `;
+                    docContainer.appendChild(newDoc);
+                }, 1000);
+            }
+        }
+
+        // Notes functions
+        function addNote() {
+            const date = document.getElementById('note-date').value;
+            const content = document.getElementById('note-content').value.trim();
+            
+            if (date && content) {
+                const notesList = document.getElementById('notes-list');
+                const severity = content.toLowerCase().includes('retard') || content.toLowerCase().includes('pleure') ? 'PRIORITAIRE' : 
+                               content.toLowerCase().includes('critique') || content.toLowerCase().includes('remarque') ? 'MODÉRÉ' : 'INFO';
+                const severityColor = severity === 'PRIORITAIRE' ? '#dc3545' : severity === 'MODÉRÉ' ? '#ffc107' : '#28a745';
+                const severityTextColor = severity === 'MODÉRÉ' ? '#856404' : 'white';
+                
+                const newNote = document.createElement('div');
+                newNote.className = 'note-item';
+                newNote.style.cssText = `background: #f8f9fa; border-left: 4px solid ${severityColor}; padding: 15px; margin-bottom: 15px; border-radius: 0 10px 10px 0;`;
+                newNote.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <strong style="color: ${severityColor};">📅 ${new Date(date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</strong>
+                        <span style="background: ${severityColor}; color: ${severityTextColor}; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem;">${severity}</span>
+                    </div>
+                    <p style="margin-bottom: 8px; line-height: 1.4;">
+                        ${content}
+                    </p>
+                    <div style="font-size: 0.8rem; color: #666; font-style: italic;">
+                        Ajouté par Steph/Mathieu
+                    </div>
+                `;
+                
+                notesList.insertBefore(newNote, notesList.firstChild);
+                
+                // Clear form
+                document.getElementById('note-date').value = '';
+                document.getElementById('note-content').value = '';
+                
+                showNotification('📝 Note ajoutée au rapport');
+            } else {
+                alert('Veuillez remplir la date et le contenu de la note.');
+            }
+        }
+
+        // Export functions
+        function exportNotes(format) {
+            const messages = {
+                'pdf': '📄 Export PDF en cours...',
+                'email': '📧 Préparation de l\'email...',
+                'legal': '⚖️ Format légal généré...'
+            };
+            
+            showNotification(messages[format]);
+            
+            setTimeout(() => {
+                const successMessages = {
+                    'pdf': '✅ Rapport PDF généré !',
+                    'email': '✅ Email envoyé à votre avocat !',
+                    'legal': '✅ Document légal prêt !'
+                };
+                showNotification(successMessages[format]);
+            }, 2000);
+        }
+
+        // Export functionality
+        function exportToPDF() {
+            showNotification('📄 Export PDF en cours...');
+            setTimeout(() => {
+                showNotification('✅ Export terminé !');
+            }, 2000);
+        }
+
+        // Sync with Google Calendar (placeholder)
+        function syncGoogleCalendar() {
+            showNotification('📅 Synchronisation Google Agenda...');
+            setTimeout(() => {
+                showNotification('✅ Synchronisation réussie !');
+            }, 3000);
+        }
+
+        // Emergency contact quick access
+        function callEmergency() {
+            if (confirm('Appeler les services d\'urgence ?')) {
+                showNotification('📞 Appel d\'urgence...');
+            }
+        }
+
+        // Geolocation for nounou/activities
+        function showLocation(place) {
+            showNotification(`📍 Localisation de ${place}...`);
+            setTimeout(() => {
+                showNotification('🗺️ Itinéraire ouvert dans Maps');
+            }, 1500);
+        }
+
+        // Family sharing notifications
+        function sendNotificationToPartner(message) {
+            showNotification(`📱 Notification envoyée : ${message}`);
+        }
+
+        // Add some interactive features for demo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers for interactive elements
+            const docItems = document.querySelectorAll('.doc-item');
+            docItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const docName = this.querySelector('div div').textContent;
+                    showNotification(`📖 Ouverture de ${docName}...`);
+                });
+            });
+
+            // Add hover effects for day cards
+            const dayCards = document.querySelectorAll('.day-card');
+            dayCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const day = this.querySelector('h4').textContent;
+                    showNotification(`📅 Détails pour ${day}`);
+                });
+            });
+
+            // Add click handlers for health items
+            const vaccineItems = document.querySelectorAll('.vaccine-item');
+            vaccineItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const vaccine = this.querySelector('span').textContent;
+                    showNotification(`💉 Détails pour ${vaccine}`);
+                });
+            });
+        });
+
+    </script>
+</body>
+</html>
