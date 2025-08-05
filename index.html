@@ -739,25 +739,30 @@
         </div>
 
         <div class="bottom-nav">
-            <div class="nav-item active" onclick="switchTab('planning')">
+            <div class="nav-item" onclick="switchTab('planning')">
                 <div class="nav-icon">📅</div>
                 <div class="nav-label">Planning</div>
+                <div id="planning-badge" class="notification-badge">0</div>
             </div>
             <div class="nav-item" onclick="switchTab('health')">
                 <div class="nav-icon">🏥</div>
                 <div class="nav-label">Santé</div>
+                <div id="health-badge" class="notification-badge">0</div>
             </div>
             <div class="nav-item" onclick="switchTab('shopping')">
                 <div class="nav-icon">🛒</div>
                 <div class="nav-label">Courses</div>
+                <div id="shopping-badge" class="notification-badge">0</div>
             </div>
             <div class="nav-item" onclick="switchTab('documents')">
                 <div class="nav-icon">📋</div>
                 <div class="nav-label">Documents</div>
+                <div id="documents-badge" class="notification-badge">0</div>
             </div>
             <div class="nav-item" onclick="switchTab('todo')">
                 <div class="nav-icon">✅</div>
                 <div class="nav-label">To-do</div>
+                <div id="todo-badge" class="notification-badge">0</div>
             </div>
         </div>
 
@@ -804,12 +809,31 @@
         </div>
     </div>
 
+    <!-- Document Preview Modal -->
+    <div id="doc-preview" class="doc-preview">
+        <div class="doc-preview-content">
+            <button class="close-preview" onclick="closeDocPreview()">×</button>
+            <div id="doc-preview-body">
+                <!-- Document content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
     <!-- Notification -->
     <div id="notification" class="notification">
         <span id="notification-text"></span>
     </div>
 
     <script>
+        // Global variables for notifications
+        let notificationCounts = {
+            planning: 0,
+            health: 0,
+            shopping: 0,
+            documents: 0,
+            todo: 0
+        };
+
         // Navigation between tabs
         function switchTab(tabName) {
             // Hide all tab contents
@@ -827,8 +851,32 @@
             navItems.forEach(item => {
                 if (item.onclick && item.onclick.toString().includes(tabName)) {
                     item.classList.add('active');
+                    // Clear notification for this tab when opened
+                    if (notificationCounts[tabName] > 0) {
+                        notificationCounts[tabName] = 0;
+                        updateNotificationBadge(tabName);
+                    }
                 }
             });
+        }
+
+        // Update notification badges
+        function updateNotificationBadge(tabName) {
+            const badge = document.getElementById(tabName + '-badge');
+            if (badge) {
+                if (notificationCounts[tabName] > 0) {
+                    badge.textContent = notificationCounts[tabName];
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }
+
+        // Add notification to tab
+        function addNotificationToTab(tabName) {
+            notificationCounts[tabName]++;
+            updateNotificationBadge(tabName);
         }
 
         // Shopping list functions
@@ -942,6 +990,7 @@
                         ${title}${notes ? ' - ' + notes : ''}
                     `;
                     dayCard.appendChild(eventDiv);
+                    addNotificationToTab('planning');
                     
                 } else if (type === 'task') {
                     // Add to todo
@@ -964,9 +1013,11 @@
                         <div class="assignee">${assignee === 'both' ? 'Tous' : assignee === 'mathieu' ? 'Mathieu' : 'Steph'}</div>
                     `;
                     todoContainer.appendChild(todoItem);
+                    addNotificationToTab('todo');
                     
                 } else if (type === 'medical') {
                     // Add to health section
+                    addNotificationToTab('health');
                     showNotification('🏥 Rendez-vous médical ajouté !');
                 }
                 
@@ -1028,9 +1079,79 @@
                             <div style="font-size: 0.8rem; color: #666;">Ajouté le ${new Date().toLocaleDateString('fr-FR')}</div>
                         </div>
                     `;
+                    
+                    // Add click handler for document preview
+                    newDoc.addEventListener('click', function() {
+                        openDocPreview(fileName, fileExtension);
+                    });
+                    
                     docContainer.appendChild(newDoc);
+                    addNotificationToTab('documents');
                 }, 1000);
             }
+        }
+
+        // Document preview functions
+        function openDocPreview(fileName, fileExtension) {
+            const preview = document.getElementById('doc-preview');
+            const previewBody = document.getElementById('doc-preview-body');
+            
+            let content = '';
+            
+            if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+                content = `
+                    <h3>🖼️ ${fileName}</h3>
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="background: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 10px; padding: 40px; margin: 20px 0;">
+                            <div style="font-size: 3rem; margin-bottom: 10px;">📷</div>
+                            <p>Aperçu de l'image</p>
+                            <p style="font-size: 0.8rem; color: #666;">Format: ${fileExtension.toUpperCase()}</p>
+                        </div>
+                        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                            <button onclick="showNotification('📱 Partage en cours...')" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Partager</button>
+                            <button onclick="showNotification('💾 Téléchargement...')" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Télécharger</button>
+                        </div>
+                    </div>
+                `;
+            } else if (fileExtension === 'pdf') {
+                content = `
+                    <h3>📄 ${fileName}</h3>
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="background: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 10px; padding: 40px; margin: 20px 0;">
+                            <div style="font-size: 3rem; margin-bottom: 10px;">📋</div>
+                            <p>Document PDF</p>
+                            <p style="font-size: 0.8rem; color: #666;">Cliquez pour ouvrir dans une nouvelle fenêtre</p>
+                        </div>
+                        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                            <button onclick="showNotification('📱 Partage en cours...')" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Partager</button>
+                            <button onclick="showNotification('💾 Téléchargement...')" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Télécharger</button>
+                            <button onclick="showNotification('🖨️ Impression...')" style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Imprimer</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                content = `
+                    <h3>📝 ${fileName}</h3>
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="background: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 10px; padding: 40px; margin: 20px 0;">
+                            <div style="font-size: 3rem; margin-bottom: 10px;">📄</div>
+                            <p>Document ${fileExtension.toUpperCase()}</p>
+                            <p style="font-size: 0.8rem; color: #666;">Aperçu non disponible</p>
+                        </div>
+                        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                            <button onclick="showNotification('📱 Partage en cours...')" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Partager</button>
+                            <button onclick="showNotification('💾 Téléchargement...')" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Télécharger</button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            previewBody.innerHTML = content;
+            preview.style.display = 'flex';
+        }
+
+        function closeDocPreview() {
+            document.getElementById('doc-preview').style.display = 'none';
         }
 
         // Add event listener for Enter key in shopping input
@@ -1053,28 +1174,20 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('item-date').value = today;
             
+            // Initialize the first tab as active
+            document.querySelector('.nav-item').classList.add('active');
+            
             // Show welcome notification
             setTimeout(() => {
                 showNotification('👋 Bienvenue dans FamilyLife !');
             }, 1000);
-            
-            // Add click handlers for interactive elements
-            const docItems = document.querySelectorAll('.doc-item');
-            docItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    const docName = this.querySelector('div div').textContent;
-                    showNotification(`📖 Ouverture de ${docName}...`);
-                });
-            });
+        });
 
-            // Add hover effects for day cards
-            const dayCards = document.querySelectorAll('.day-card');
-            dayCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    const day = this.querySelector('h4').textContent;
-                    showNotification(`📅 Détails pour ${day}`);
-                });
-            });
+        // Close document preview when clicking outside
+        document.getElementById('doc-preview').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDocPreview();
+            }
         });
 
         // Simulate real-time updates
