@@ -541,6 +541,73 @@
             transform: translateX(0);
         }
 
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .doc-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+            cursor: pointer;
+        }
+
+        .doc-preview {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .doc-preview-content {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 90%;
+            max-height: 80%;
+            overflow: auto;
+            position: relative;
+        }
+
+        .close-preview {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
         @media (max-width: 480px) {
             .app-container {
                 max-width: 100%;
@@ -566,91 +633,6 @@
                     <div class="avatar">M</div>
                     <span>Mathieu</span>
                 </div>
-
-            <!-- Notes Tab -->
-            <div id="notes-tab" class="tab-content">
-                <div class="notes-section" style="background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                    <h3 style="color: #2c3e50; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">📝 Gaslight Report</h3>
-                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 20px; font-style: italic;">
-                        Documentation des comportements et incidents concernant le père d'Adèle
-                    </p>
-                    
-                    <!-- Add new note -->
-                    <div style="background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
-                        <h4 style="margin-bottom: 10px; color: #2c3e50;">➕ Nouvelle note</h4>
-                        <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <input type="date" id="note-date" style="padding: 8px; border: 1px solid #ddd; border-radius: 5px;" />
-                            <textarea id="note-content" placeholder="Décrire l'incident, comportement ou remarque..." rows="4" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; resize: vertical;"></textarea>
-                            <button onclick="addNote()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">Ajouter la note</button>
-                        </div>
-                    </div>
-
-                    <!-- Notes list -->
-                    <div id="notes-list">
-                        <div class="note-item" style="background: #f8f9fa; border-left: 4px solid #dc3545; padding: 15px; margin-bottom: 15px; border-radius: 0 10px 10px 0;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                <strong style="color: #dc3545;">📅 28 juillet 2025</strong>
-                                <span style="background: #dc3545; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem;">PRIORITAIRE</span>
-                            </div>
-                            <p style="margin-bottom: 8px; line-height: 1.4;">
-                                N'a pas ramené Adèle à l'heure convenue (20h au lieu de 18h). Aucun appel pour prévenir du retard. Adèle était fatiguée et stressée.
-                            </p>
-                            <div style="font-size: 0.8rem; color: #666; font-style: italic;">
-                                Ajouté par Steph
-                            </div>
-                        </div>
-
-                        <div class="note-item" style="background: #f8f9fa; border-left: 4px solid #ffc107; padding: 15px; margin-bottom: 15px; border-radius: 0 10px 10px 0;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                <strong style="color: #856404;">📅 25 juillet 2025</strong>
-                                <span style="background: #ffc107; color: #856404; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem;">MODÉRÉ</span>
-                            </div>
-                            <p style="margin-bottom: 8px; line-height: 1.4;">
-                                Critique négative sur notre organisation familiale devant Adèle. "Votre maison est toujours en désordre". Adèle semblait gênée.
-                            </p>
-                            <div style="font-size: 0.8rem; color: #666; font-style: italic;">
-                                Ajouté par Mathieu
-                            </div>
-                        </div>
-
-                        <div class="note-item" style="background: #f8f9fa; border-left: 4px solid #28a745; padding: 15px; margin-bottom: 15px; border-radius: 0 10px 10px 0;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                <strong style="color: #155724;">📅 22 juillet 2025</strong>
-                                <span style="background: #28a745; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem;">INFO</span>
-                            </div>
-                            <p style="margin-bottom: 8px; line-height: 1.4;">
-                                Questions insistantes sur nos finances et notre vie privée lors de la récupération d'Adèle. "Vous arrivez à joindre les deux bouts ?"
-                            </p>
-                            <div style="font-size: 0.8rem; color: #666; font-style: italic;">
-                                Ajouté par Steph
-                            </div>
-                        </div>
-
-                        <div class="note-item" style="background: #f8f9fa; border-left: 4px solid #dc3545; padding: 15px; margin-bottom: 15px; border-radius: 0 10px 10px 0;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                <strong style="color: #dc3545;">📅 18 juillet 2025</strong>
-                                <span style="background: #dc3545; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem;">PRIORITAIRE</span>
-                            </div>
-                            <p style="margin-bottom: 8px; line-height: 1.4;">
-                                A dit à Adèle que "Maman et Mathieu ne savent pas s'occuper d'un bébé" en parlant d'Albane. Adèle nous a rapporté ces propos en pleurant.
-                            </p>
-                            <div style="font-size: 0.8rem; color: #666; font-style: italic;">
-                                Ajouté par Steph
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Export options -->
-                    <div style="margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 10px;">
-                        <h4 style="margin-bottom: 10px; color: #2c3e50;">📤 Export</h4>
-                        <div style="display: flex; gap: 10px;">
-                            <button onclick="exportNotes('pdf')" style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;">PDF</button>
-                            <button onclick="exportNotes('email')" style="background: #007bff; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;">Email</button>
-                            <button onclick="exportNotes('legal')" style="background: #6c757d; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;">Format légal</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
                 <div style="font-size: 0.9rem; opacity: 0.8;">📱 Synchronisé</div>
                 <div class="user-profile">
                     <div class="avatar" style="background: linear-gradient(45deg, #a8edea, #fed6e3);">S</div>
@@ -664,23 +646,11 @@
             <div id="planning-tab" class="tab-content active">
                 <div class="week-overview">
                     <h3>📅 Semaine en un coup d'œil</h3>
-                    <div class="day-card">
-                        <h4>Lundi 4 Août</h4>
-                        <div class="event"><div class="event-dot work"></div>Mathieu: Travail 8h-17h</div>
-                        <div class="event"><div class="event-dot adele"></div>Adèle chez Papa</div>
-                        <div class="event"><div class="event-dot albane"></div>Albane chez nounou 7h30-18h</div>
-                    </div>
-                    <div class="day-card">
-                        <h4>Mardi 5 Août</h4>
-                        <div class="event"><div class="event-dot work"></div>Steph: Travail 9h-16h</div>
-                        <div class="event"><div class="event-dot medical"></div>RDV pédiatre Albane 14h</div>
-                        <div class="event"><div class="event-dot activity"></div>Piscine Adèle 17h</div>
-                    </div>
-                    <div class="day-card">
-                        <h4>Mercredi 6 Août</h4>
-                        <div class="event"><div class="event-dot adele"></div>Adèle: Centre aéré</div>
-                        <div class="event"><div class="event-dot work"></div>Mathieu: Télétravail</div>
-                        <div class="event"><div class="event-dot albane"></div>Albane chez nounou (½ journée)</div>
+                    <div id="planning-days">
+                        <div style="text-align: center; padding: 40px; color: #666; font-style: italic;">
+                            📅 Aucun événement pour cette semaine<br>
+                            <span style="font-size: 0.8rem;">Utilisez le bouton + pour ajouter des événements</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -692,33 +662,15 @@
                     
                     <div class="child-health">
                         <h4>👧 Adèle (7 ans)</h4>
-                        <div class="vaccine-item">
-                            <span>ROR (Rappel)</span>
-                            <span class="vaccine-status done">✓ Fait</span>
-                        </div>
-                        <div class="vaccine-item">
-                            <span>DTP-Coqueluche</span>
-                            <span class="vaccine-status upcoming">📅 Nov 2025</span>
-                        </div>
-                        <div class="vaccine-item">
-                            <span>Visite dentiste</span>
-                            <span class="vaccine-status overdue">⚠️ En retard</span>
+                        <div style="text-align: center; padding: 20px; color: #666; font-style: italic;">
+                            Aucune donnée de santé enregistrée
                         </div>
                     </div>
 
                     <div class="child-health">
                         <h4>👶 Albane (10 mois)</h4>
-                        <div class="vaccine-item">
-                            <span>Hexavalent (3ème injection)</span>
-                            <span class="vaccine-status done">✓ Fait</span>
-                        </div>
-                        <div class="vaccine-item">
-                            <span>ROR (1ère injection)</span>
-                            <span class="vaccine-status upcoming">📅 Oct 2025</span>
-                        </div>
-                        <div class="vaccine-item">
-                            <span>Visite 12 mois</span>
-                            <span class="vaccine-status upcoming">📅 Sep 2025</span>
+                        <div style="text-align: center; padding: 20px; color: #666; font-style: italic;">
+                            Aucune donnée de santé enregistrée
                         </div>
                     </div>
                 </div>
@@ -735,25 +687,9 @@
                     </div>
 
                     <div id="shopping-items">
-                        <div class="list-item">
-                            <input type="checkbox" onchange="toggleItem(this)" />
-                            <span>Lait bébé (Gallia)</span>
-                            <span class="category-tag pharmacy">Pharmacie</span>
-                        </div>
-                        <div class="list-item">
-                            <input type="checkbox" onchange="toggleItem(this)" />
-                            <span>Pain de mie</span>
-                            <span class="category-tag groceries">Courses</span>
-                        </div>
-                        <div class="list-item completed">
-                            <input type="checkbox" checked onchange="toggleItem(this)" />
-                            <span>Chaussures Adèle T.32</span>
-                            <span class="category-tag clothes">Vêtements</span>
-                        </div>
-                        <div class="list-item">
-                            <input type="checkbox" onchange="toggleItem(this)" />
-                            <span>Yaourts nature</span>
-                            <span class="category-tag groceries">Courses</span>
+                        <div style="text-align: center; padding: 40px; color: #666; font-style: italic;">
+                            🛒 Liste vide<br>
+                            <span style="font-size: 0.8rem;">Ajoutez des articles ci-dessus</span>
                         </div>
                     </div>
                 </div>
@@ -778,35 +714,10 @@
                         </div>
                     </div>
                     
-                    <div class="doc-item">
-                        <div class="doc-icon pdf">📄</div>
-                        <div>
-                            <div style="font-weight: bold;">Certificat médical Adèle</div>
-                            <div style="font-size: 0.8rem; color: #666;">Sport - Valide jusqu'en juin 2026</div>
-                        </div>
-                    </div>
-                    
-                    <div class="doc-item">
-                        <div class="doc-icon school">🏫</div>
-                        <div>
-                            <div style="font-weight: bold;">Bulletin scolaire T3</div>
-                            <div style="font-size: 0.8rem; color: #666;">Adèle - CE1 - Très bien</div>
-                        </div>
-                    </div>
-                    
-                    <div class="doc-item">
-                        <div class="doc-icon image">🖼️</div>
-                        <div>
-                            <div style="font-weight: bold;">Carnet de santé Albane</div>
-                            <div style="font-size: 0.8rem; color: #666;">Photo des pages vaccins</div>
-                        </div>
-                    </div>
-                    
-                    <div class="doc-item">
-                        <div class="doc-icon pdf">📄</div>
-                        <div>
-                            <div style="font-weight: bold;">Assurance scolaire</div>
-                            <div style="font-size: 0.8rem; color: #666;">Année 2025-2026</div>
+                    <div id="documents-list">
+                        <div style="text-align: center; padding: 40px; color: #666; font-style: italic;">
+                            📄 Aucun document<br>
+                            <span style="font-size: 0.8rem;">Utilisez la section de téléchargement ci-dessus</span>
                         </div>
                     </div>
                 </div>
@@ -817,40 +728,11 @@
                 <div class="todo-section">
                     <h3>✅ To-do parentale</h3>
                     
-                    <div class="todo-item">
-                        <input type="checkbox" onchange="toggleTodo(this)" />
-                        <div>
-                            <div style="font-weight: bold;">Inscrire Adèle à la cantine</div>
-                            <div style="font-size: 0.8rem; color: #666;">Pour septembre 2025</div>
+                    <div id="todo-list">
+                        <div style="text-align: center; padding: 40px; color: #666; font-style: italic;">
+                            ✅ Aucune tâche<br>
+                            <span style="font-size: 0.8rem;">Utilisez le bouton + pour ajouter des tâches</span>
                         </div>
-                        <div class="assignee">Steph</div>
-                    </div>
-                    
-                    <div class="todo-item">
-                        <input type="checkbox" onchange="toggleTodo(this)" />
-                        <div>
-                            <div style="font-weight: bold;">Réserver pédiatre Albane</div>
-                            <div style="font-size: 0.8rem; color: #666;">Visite 12 mois</div>
-                        </div>
-                        <div class="assignee">Mathieu</div>
-                    </div>
-                    
-                    <div class="todo-item">
-                        <input type="checkbox" onchange="toggleTodo(this)" />
-                        <div>
-                            <div style="font-weight: bold;">Acheter fournitures scolaires</div>
-                            <div style="font-size: 0.8rem; color: #666;">Liste CE2 reçue</div>
-                        </div>
-                        <div class="assignee">Mathieu</div>
-                    </div>
-                    
-                    <div class="todo-item" style="opacity: 0.6;">
-                        <input type="checkbox" checked onchange="toggleTodo(this)" />
-                        <div>
-                            <div style="font-weight: bold; text-decoration: line-through;">Rendez-vous dentiste Adèle</div>
-                            <div style="font-size: 0.8rem; color: #666;">Fait le 1er août</div>
-                        </div>
-                        <div class="assignee">Steph</div>
                     </div>
                 </div>
             </div>
@@ -876,10 +758,6 @@
             <div class="nav-item" onclick="switchTab('todo')">
                 <div class="nav-icon">✅</div>
                 <div class="nav-label">To-do</div>
-            </div>
-            <div class="nav-item" onclick="switchTab('notes')">
-                <div class="nav-icon">📝</div>
-                <div class="nav-label">Notes</div>
             </div>
         </div>
 
@@ -944,7 +822,13 @@
             // Update nav items
             const navItems = document.querySelectorAll('.nav-item');
             navItems.forEach(item => item.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            
+            // Find and activate the correct nav item
+            navItems.forEach(item => {
+                if (item.onclick && item.onclick.toString().includes(tabName)) {
+                    item.classList.add('active');
+                }
+            });
         }
 
         // Shopping list functions
@@ -954,6 +838,13 @@
             
             if (text) {
                 const itemsContainer = document.getElementById('shopping-items');
+                
+                // Remove empty message if present
+                const emptyMessage = itemsContainer.querySelector('div[style*="text-align: center"]');
+                if (emptyMessage) {
+                    emptyMessage.remove();
+                }
+                
                 const newItem = document.createElement('div');
                 newItem.className = 'list-item';
                 newItem.innerHTML = `
@@ -961,9 +852,9 @@
                     <span>${text}</span>
                     <span class="category-tag groceries">Courses</span>
                 `;
-                itemsContainer.insertBefore(newItem, itemsContainer.firstChild);
+                itemsContainer.appendChild(newItem);
                 input.value = '';
-                showNotification('Article ajouté à la liste !');
+                showNotification('🛒 Article ajouté à la liste !');
             }
         }
 
@@ -1004,18 +895,86 @@
         }
 
         function addNewItem() {
-            const title = document.getElementById('item-title').value;
+            const title = document.getElementById('item-title').value.trim();
             const type = document.getElementById('item-type').value;
             const date = document.getElementById('item-date').value;
             const assignee = document.getElementById('item-assignee').value;
-            const notes = document.getElementById('item-notes').value;
+            const notes = document.getElementById('item-notes').value.trim();
 
             if (title && date) {
-                // Add logic to append to appropriate section based on type
+                const formattedDate = new Date(date).toLocaleDateString('fr-FR', { 
+                    weekday: 'long', 
+                    day: 'numeric', 
+                    month: 'long' 
+                });
+                
+                if (type === 'event') {
+                    // Add to planning
+                    const planningContainer = document.getElementById('planning-days');
+                    
+                    // Remove empty message if present
+                    const emptyMessage = planningContainer.querySelector('div[style*="text-align: center"]');
+                    if (emptyMessage) {
+                        emptyMessage.remove();
+                    }
+                    
+                    // Find or create day card
+                    let dayCard = null;
+                    const existingCards = planningContainer.querySelectorAll('.day-card');
+                    existingCards.forEach(card => {
+                        if (card.querySelector('h4').textContent.includes(formattedDate.split(' ')[1] + ' ' + formattedDate.split(' ')[2])) {
+                            dayCard = card;
+                        }
+                    });
+                    
+                    if (!dayCard) {
+                        dayCard = document.createElement('div');
+                        dayCard.className = 'day-card';
+                        dayCard.innerHTML = `<h4>${formattedDate}</h4>`;
+                        planningContainer.appendChild(dayCard);
+                    }
+                    
+                    // Add event
+                    const eventDiv = document.createElement('div');
+                    eventDiv.className = 'event';
+                    eventDiv.innerHTML = `
+                        <div class="event-dot work"></div>
+                        ${title}${notes ? ' - ' + notes : ''}
+                    `;
+                    dayCard.appendChild(eventDiv);
+                    
+                } else if (type === 'task') {
+                    // Add to todo
+                    const todoContainer = document.getElementById('todo-list');
+                    
+                    // Remove empty message if present
+                    const emptyMessage = todoContainer.querySelector('div[style*="text-align: center"]');
+                    if (emptyMessage) {
+                        emptyMessage.remove();
+                    }
+                    
+                    const todoItem = document.createElement('div');
+                    todoItem.className = 'todo-item';
+                    todoItem.innerHTML = `
+                        <input type="checkbox" onchange="toggleTodo(this)" />
+                        <div>
+                            <div style="font-weight: bold;">${title}</div>
+                            <div style="font-size: 0.8rem; color: #666;">${notes || 'Échéance: ' + formattedDate}</div>
+                        </div>
+                        <div class="assignee">${assignee === 'both' ? 'Tous' : assignee === 'mathieu' ? 'Mathieu' : 'Steph'}</div>
+                    `;
+                    todoContainer.appendChild(todoItem);
+                    
+                } else if (type === 'medical') {
+                    // Add to health section
+                    showNotification('🏥 Rendez-vous médical ajouté !');
+                }
+                
                 closeAddModal();
-                showNotification('Nouvel élément ajouté !');
+                showNotification('✅ Élément ajouté avec succès !');
+                
             } else {
-                alert('Veuillez remplir au moins le titre et la date.');
+                alert('⚠️ Veuillez remplir au moins le titre et la date.');
             }
         }
 
@@ -1030,6 +989,48 @@
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
+        }
+
+        // File upload handler
+        function handleFileUpload(input) {
+            const file = input.files[0];
+            if (file) {
+                const fileName = file.name;
+                const fileSize = (file.size / 1024 / 1024).toFixed(2);
+                showNotification(`📎 ${fileName} (${fileSize} MB) téléchargé !`);
+                
+                // Remove empty message if present
+                const docContainer = document.getElementById('documents-list');
+                const emptyMessage = docContainer.querySelector('div[style*="text-align: center"]');
+                if (emptyMessage) {
+                    emptyMessage.remove();
+                }
+                
+                // Simulate adding to document list
+                setTimeout(() => {
+                    const newDoc = document.createElement('div');
+                    newDoc.className = 'doc-item';
+                    const fileExtension = fileName.split('.').pop().toLowerCase();
+                    let iconClass = 'pdf';
+                    let iconEmoji = '📄';
+                    if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+                        iconClass = 'image';
+                        iconEmoji = '🖼️';
+                    } else if (['doc', 'docx'].includes(fileExtension)) {
+                        iconClass = 'school';
+                        iconEmoji = '📝';
+                    }
+                    
+                    newDoc.innerHTML = `
+                        <div class="doc-icon ${iconClass}">${iconEmoji}</div>
+                        <div>
+                            <div style="font-weight: bold;">${fileName}</div>
+                            <div style="font-size: 0.8rem; color: #666;">Ajouté le ${new Date().toLocaleDateString('fr-FR')}</div>
+                        </div>
+                    `;
+                    docContainer.appendChild(newDoc);
+                }, 1000);
+            }
         }
 
         // Add event listener for Enter key in shopping input
@@ -1048,155 +1049,15 @@
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
-            // Set today's date as default in modal and notes
+            // Set today's date as default in modal
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('item-date').value = today;
-            document.getElementById('note-date').value = today;
             
             // Show welcome notification
             setTimeout(() => {
                 showNotification('👋 Bienvenue dans FamilyLife !');
             }, 1000);
-        });
-
-        // Simulate real-time updates
-        setInterval(() => {
-            // Simulate sync indicator
-            const header = document.querySelector('.header h1');
-            header.innerHTML = '🏠 FamilyLife <span style="font-size: 0.7rem; opacity: 0.7;">🔄</span>';
             
-            setTimeout(() => {
-                header.innerHTML = '🏠 FamilyLife <span style="font-size: 0.7rem; opacity: 0.7;">✓</span>';
-            }, 500);
-            
-            setTimeout(() => {
-                header.innerHTML = '🏠 FamilyLife';
-            }, 2000);
-        }, 30000);
-
-        // File upload handler
-        function handleFileUpload(input) {
-            const file = input.files[0];
-            if (file) {
-                const fileName = file.name;
-                const fileSize = (file.size / 1024 / 1024).toFixed(2);
-                showNotification(`📎 ${fileName} (${fileSize} MB) téléchargé !`);
-                
-                // Simulate adding to document list
-                setTimeout(() => {
-                    const docContainer = document.querySelector('.documents-section');
-                    const newDoc = document.createElement('div');
-                    newDoc.className = 'doc-item';
-                    newDoc.innerHTML = `
-                        <div class="doc-icon pdf">📄</div>
-                        <div>
-                            <div style="font-weight: bold;">${fileName}</div>
-                            <div style="font-size: 0.8rem; color: #666;">Ajouté le ${new Date().toLocaleDateString('fr-FR')}</div>
-                        </div>
-                    `;
-                    docContainer.appendChild(newDoc);
-                }, 1000);
-            }
-        }
-
-        // Notes functions
-        function addNote() {
-            const date = document.getElementById('note-date').value;
-            const content = document.getElementById('note-content').value.trim();
-            
-            if (date && content) {
-                const notesList = document.getElementById('notes-list');
-                const severity = content.toLowerCase().includes('retard') || content.toLowerCase().includes('pleure') ? 'PRIORITAIRE' : 
-                               content.toLowerCase().includes('critique') || content.toLowerCase().includes('remarque') ? 'MODÉRÉ' : 'INFO';
-                const severityColor = severity === 'PRIORITAIRE' ? '#dc3545' : severity === 'MODÉRÉ' ? '#ffc107' : '#28a745';
-                const severityTextColor = severity === 'MODÉRÉ' ? '#856404' : 'white';
-                
-                const newNote = document.createElement('div');
-                newNote.className = 'note-item';
-                newNote.style.cssText = `background: #f8f9fa; border-left: 4px solid ${severityColor}; padding: 15px; margin-bottom: 15px; border-radius: 0 10px 10px 0;`;
-                newNote.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <strong style="color: ${severityColor};">📅 ${new Date(date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</strong>
-                        <span style="background: ${severityColor}; color: ${severityTextColor}; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem;">${severity}</span>
-                    </div>
-                    <p style="margin-bottom: 8px; line-height: 1.4;">
-                        ${content}
-                    </p>
-                    <div style="font-size: 0.8rem; color: #666; font-style: italic;">
-                        Ajouté par Steph/Mathieu
-                    </div>
-                `;
-                
-                notesList.insertBefore(newNote, notesList.firstChild);
-                
-                // Clear form
-                document.getElementById('note-date').value = '';
-                document.getElementById('note-content').value = '';
-                
-                showNotification('📝 Note ajoutée au rapport');
-            } else {
-                alert('Veuillez remplir la date et le contenu de la note.');
-            }
-        }
-
-        // Export functions
-        function exportNotes(format) {
-            const messages = {
-                'pdf': '📄 Export PDF en cours...',
-                'email': '📧 Préparation de l\'email...',
-                'legal': '⚖️ Format légal généré...'
-            };
-            
-            showNotification(messages[format]);
-            
-            setTimeout(() => {
-                const successMessages = {
-                    'pdf': '✅ Rapport PDF généré !',
-                    'email': '✅ Email envoyé à votre avocat !',
-                    'legal': '✅ Document légal prêt !'
-                };
-                showNotification(successMessages[format]);
-            }, 2000);
-        }
-
-        // Export functionality
-        function exportToPDF() {
-            showNotification('📄 Export PDF en cours...');
-            setTimeout(() => {
-                showNotification('✅ Export terminé !');
-            }, 2000);
-        }
-
-        // Sync with Google Calendar (placeholder)
-        function syncGoogleCalendar() {
-            showNotification('📅 Synchronisation Google Agenda...');
-            setTimeout(() => {
-                showNotification('✅ Synchronisation réussie !');
-            }, 3000);
-        }
-
-        // Emergency contact quick access
-        function callEmergency() {
-            if (confirm('Appeler les services d\'urgence ?')) {
-                showNotification('📞 Appel d\'urgence...');
-            }
-        }
-
-        // Geolocation for nounou/activities
-        function showLocation(place) {
-            showNotification(`📍 Localisation de ${place}...`);
-            setTimeout(() => {
-                showNotification('🗺️ Itinéraire ouvert dans Maps');
-            }, 1500);
-        }
-
-        // Family sharing notifications
-        function sendNotificationToPartner(message) {
-            showNotification(`📱 Notification envoyée : ${message}`);
-        }
-
-        // Add some interactive features for demo
-        document.addEventListener('DOMContentLoaded', function() {
             // Add click handlers for interactive elements
             const docItems = document.querySelectorAll('.doc-item');
             docItems.forEach(item => {
@@ -1214,16 +1075,22 @@
                     showNotification(`📅 Détails pour ${day}`);
                 });
             });
-
-            // Add click handlers for health items
-            const vaccineItems = document.querySelectorAll('.vaccine-item');
-            vaccineItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    const vaccine = this.querySelector('span').textContent;
-                    showNotification(`💉 Détails pour ${vaccine}`);
-                });
-            });
         });
+
+        // Simulate real-time updates
+        setInterval(() => {
+            // Simulate sync indicator
+            const header = document.querySelector('.header h1');
+            header.innerHTML = '🏠 FamilyLife <span style="font-size: 0.7rem; opacity: 0.7;">🔄</span>';
+            
+            setTimeout(() => {
+                header.innerHTML = '🏠 FamilyLife <span style="font-size: 0.7rem; opacity: 0.7;">✓</span>';
+            }, 500);
+            
+            setTimeout(() => {
+                header.innerHTML = '🏠 FamilyLife';
+            }, 2000);
+        }, 30000);
 
     </script>
 </body>
