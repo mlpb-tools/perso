@@ -1,1210 +1,654 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FamilyLife - Gestion Familiale</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #fef7f0 0%, #f3e7f1 100%);
-            color: #2c3e50;
-            overflow-x: hidden;
-        }
-
-        .app-container {
-            max-width: 400px;
-            margin: 0 auto;
-            min-height: 100vh;
-            background: white;
-            box-shadow: 0 0 30px rgba(0,0,0,0.1);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 20px);
-            animation: slide 20s linear infinite;
-        }
-
-        @keyframes slide {
-            0% { transform: translateX(-50px) translateY(-50px); }
-            100% { transform: translateX(0px) translateY(0px); }
-        }
-
-        .header h1 {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .user-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255,255,255,0.1);
-            padding: 8px 12px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-        }
-
-        .avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #ff9a9e, #fecfef);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 12px;
-        }
-
-        .content {
-            flex: 1;
-            padding: 20px;
-            padding-bottom: 80px;
-        }
-
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .week-overview {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .week-overview h3 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .day-card {
-            background: white;
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border-left: 4px solid #ff9a9e;
-        }
-
-        .day-card h4 {
-            color: #667eea;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-        }
-
-        .event {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 4px 0;
-            font-size: 0.85rem;
-        }
-
-        .event-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        .work { background: #3498db; }
-        .adele { background: #e74c3c; }
-        .albane { background: #f39c12; }
-        .medical { background: #2ecc71; }
-        .activity { background: #9b59b6; }
-
-        .health-section {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .health-section h3 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .child-health {
-            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-
-        .child-health h4 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .vaccine-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.3);
-        }
-
-        .vaccine-item:last-child {
-            border-bottom: none;
-        }
-
-        .vaccine-status {
-            padding: 4px 8px;
-            border-radius: 15px;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-
-        .done { background: #d4edda; color: #155724; }
-        .upcoming { background: #fff3cd; color: #856404; }
-        .overdue { background: #f8d7da; color: #721c24; }
-
-        .shopping-list {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .add-item {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .add-item input {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #e9ecef;
-            border-radius: 25px;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .add-item input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .add-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            transition: transform 0.2s ease;
-        }
-
-        .add-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .list-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .list-item:hover {
-            background: #e9ecef;
-        }
-
-        .list-item input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        .list-item.completed {
-            opacity: 0.6;
-            text-decoration: line-through;
-        }
-
-        .category-tag {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            margin-left: auto;
-        }
-
-        .groceries { background: #d1ecf1; color: #0c5460; }
-        .pharmacy { background: #d4edda; color: #155724; }
-        .clothes { background: #f8d7da; color: #721c24; }
-
-        .documents-section {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .doc-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .doc-item:hover {
-            background: #e9ecef;
-            transform: translateX(5px);
-        }
-
-        .doc-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: white;
-        }
-
-        .pdf { background: #dc3545; }
-        .image { background: #28a745; }
-        .school { background: #007bff; }
-
-        .todo-section {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .todo-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 15px;
-            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-
-        .todo-item input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-        }
-
-        .assignee {
-            margin-left: auto;
-            padding: 4px 8px;
-            background: rgba(255,255,255,0.5);
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            max-width: 400px;
-            width: 100%;
-            background: white;
-            border-top: 1px solid #e9ecef;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            padding: 8px 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 10px;
-            flex: 1;
-        }
-
-        .nav-item:hover, .nav-item.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .nav-icon {
-            font-size: 1.2rem;
-        }
-
-        .nav-label {
-            font-size: 0.7rem;
-            font-weight: bold;
-        }
-
-        .floating-add {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4);
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
-
-        .floating-add:hover {
-            transform: scale(1.1) rotate(90deg);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 2000;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            max-width: 350px;
-            width: 90%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .modal h3 {
-            margin-bottom: 20px;
-            color: #2c3e50;
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            outline: none;
-            transition: border-color 0.3s ease;
-        }
-
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            border-color: #667eea;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #e9ecef;
-            color: #2c3e50;
-        }
-
-        .btn:hover {
-            transform: translateY(-1px);
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
-            z-index: 3000;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #ff4757;
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        .doc-item:hover {
-            background: #e9ecef;
-            transform: translateX(5px);
-            cursor: pointer;
-        }
-
-        .doc-preview {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 2500;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .doc-preview-content {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            max-width: 90%;
-            max-height: 80%;
-            overflow: auto;
-            position: relative;
-        }
-
-        .close-preview {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            background: #ff4757;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-            font-size: 1.2rem;
-        }
-
-        @media (max-width: 480px) {
-            .app-container {
-                max-width: 100%;
-            }
-            
-            .content {
-                padding: 15px;
-            }
-            
-            .modal-content {
-                width: 95%;
-                padding: 20px;
-            }
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FamilyLife - Gestion Familiale</title>
+<style>
+/* ——— Styles (inchangés ou quasi) ——— */
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,#fef7f0 0%,#f3e7f1 100%);color:#2c3e50;overflow-x:hidden}
+.app-container{max-width:400px;margin:0 auto;min-height:100vh;background:#fff;box-shadow:0 0 30px rgba(0,0,0,.1);position:relative;display:flex;flex-direction:column}
+.header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:20px;text-align:center;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(255,255,255,.05) 10px,rgba(255,255,255,.05) 20px);animation:slide 20s linear infinite}
+@keyframes slide{0%{transform:translate(-50px,-50px)}100%{transform:translate(0,0)}}
+.header h1{font-size:1.8rem;margin-bottom:5px;position:relative;z-index:1}
+.user-info{display:flex;justify-content:space-between;align-items:center;margin-top:15px;position:relative;z-index:1}
+.user-profile{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.1);padding:8px 12px;border-radius:20px;backdrop-filter:blur(10px)}
+.avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(45deg,#ff9a9e,#fecfef);display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:12px}
+.content{flex:1;padding:20px;padding-bottom:80px}
+.tab-content{display:none;animation:fadeIn .3s ease-in-out}
+.tab-content.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.week-overview{background:linear-gradient(135deg,#a8edea 0%,#fed6e3 100%);border-radius:15px;padding:20px;margin-bottom:20px;box-shadow:0 4px 15px rgba(0,0,0,.1)}
+.week-overview h3{color:#2c3e50;margin-bottom:15px;display:flex;align-items:center;gap:10px}
+.day-card{background:#fff;border-radius:10px;padding:12px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.08);border-left:4px solid #ff9a9e}
+.day-card h4{color:#667eea;margin-bottom:8px;font-size:.9rem;text-transform:capitalize}
+.event{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:.85rem}
+.event-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.work{background:#3498db}.adele{background:#e74c3c}.albane{background:#f39c12}.medical{background:#2ecc71}.activity{background:#9b59b6}
+.health-section,.shopping-list,.documents-section,.todo-section{background:#fff;border-radius:15px;padding:20px;margin-bottom:20px;box-shadow:0 4px 15px rgba(0,0,0,.1)}
+.child-health{background:linear-gradient(135deg,#ffecd2 0%,#fcb69f 100%);border-radius:10px;padding:15px;margin-bottom:15px}
+.child-health h4{color:#2c3e50;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.vaccine-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.3)}
+.vaccine-item:last-child{border-bottom:none}
+.vaccine-status{padding:4px 8px;border-radius:15px;font-size:.75rem;font-weight:bold}
+.done{background:#d4edda;color:#155724}.upcoming{background:#fff3cd;color:#856404}.overdue{background:#f8d7da;color:#721c24}
+.add-item{display:flex;gap:10px;margin-bottom:15px}
+.add-item input{flex:1;padding:12px;border:2px solid #e9ecef;border-radius:25px;outline:none;transition:all .3s ease}
+.add-item input:focus{border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,.1)}
+.add-btn{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;border:none;width:45px;height:45px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem;transition:transform .2s ease}
+.add-btn:hover{transform:scale(1.05)}
+.list-item{display:flex;align-items:center;gap:12px;padding:12px;background:#f8f9fa;border-radius:10px;margin-bottom:8px;transition:all .3s ease}
+.list-item:hover{background:#e9ecef}
+.list-item input[type="checkbox"]{width:18px;height:18px;cursor:pointer}
+.list-item.completed{opacity:.6;text-decoration:line-through}
+.category-tag{padding:4px 8px;border-radius:12px;font-size:.7rem;font-weight:bold;margin-left:auto}
+.groceries{background:#d1ecf1;color:#0c5460}.pharmacy{background:#d4edda;color:#155724}.clothes{background:#f8d7da;color:#721c24}
+.doc-item{display:flex;align-items:center;gap:12px;padding:12px;background:#f8f9fa;border-radius:10px;margin-bottom:10px;cursor:pointer;transition:all .3s ease}
+.doc-item:hover{background:#e9ecef;transform:translateX(5px);cursor:pointer}
+.doc-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#fff}
+.pdf{background:#dc3545}.image{background:#28a745}.school{background:#007bff}
+.todo-item{display:flex;align-items:center;gap:12px;padding:15px;background:linear-gradient(135deg,#ffecd2 0%,#fcb69f 100%);border-radius:10px;margin-bottom:10px}
+.todo-item input[type="checkbox"]{width:20px;height:20px}
+.assignee{margin-left:auto;padding:4px 8px;background:rgba(255,255,255,.5);border-radius:12px;font-size:.75rem;font-weight:bold}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:400px;width:100%;background:#fff;border-top:1px solid #e9ecef;display:flex;justify-content:space-around;padding:10px 0;box-shadow:0 -4px 15px rgba(0,0,0,.1)}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 12px;cursor:pointer;transition:all .3s ease;border-radius:10px;flex:1}
+.nav-item:hover,.nav-item.active{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;transform:translateY(-2px)}
+.nav-icon{font-size:1.2rem}
+.nav-label{font-size:.7rem;font-weight:bold}
+.floating-add{position:fixed;bottom:80px;right:20px;width:60px;height:60px;background:linear-gradient(135deg,#ff9a9e 0%,#fecfef 100%);border:none;border-radius:50%;color:#fff;font-size:1.5rem;cursor:pointer;box-shadow:0 4px 15px rgba(255,154,158,.4);transition:all .3s ease;z-index:1000}
+.floating-add:hover{transform:scale(1.1) rotate(90deg)}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:2000;backdrop-filter:blur(5px)}
+.modal-content{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:30px;border-radius:20px;max-width:350px;width:90%;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.modal h3{margin-bottom:20px;color:#2c3e50;text-align:center}
+.form-group{margin-bottom:15px}
+.form-group label{display:block;margin-bottom:5px;font-weight:bold;color:#2c3e50}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px;border:2px solid #e9ecef;border-radius:10px;outline:none;transition:border-color .3s ease}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#667eea}
+.modal-actions{display:flex;gap:10px;margin-top:20px}
+.btn{flex:1;padding:12px;border:none;border-radius:10px;font-weight:bold;cursor:pointer;transition:all .3s ease}
+.btn-primary{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff}
+.btn-secondary{background:#e9ecef;color:#2c3e50}
+.btn:hover{transform:translateY(-1px)}
+.notification{position:fixed;top:20px;right:20px;background:linear-gradient(135deg,#2ecc71 0%,#27ae60 100%);color:#fff;padding:15px 20px;border-radius:10px;box-shadow:0 4px 15px rgba(46,204,113,.3);z-index:3000;transform:translateX(400px);transition:transform .3s ease}
+.notification.show{transform:translateX(0)}
+.notification-badge{position:absolute;top:-5px;right:-5px;background:#ff4757;color:#fff;border-radius:50%;width:18px;height:18px;font-size:.7rem;font-weight:bold;display:none;align-items:center;justify-content:center;animation:pulse 2s infinite}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+.doc-preview{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:2500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(5px)}
+.doc-preview-content{background:#fff;border-radius:15px;padding:20px;max-width:90%;max-height:80%;overflow:auto;position:relative}
+.close-preview{position:absolute;top:10px;right:15px;background:#ff4757;color:#fff;border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:1.2rem}
+@media(max-width:480px){.app-container{max-width:100%}.content{padding:15px}.modal-content{width:95%;padding:20px}}
+</style>
 </head>
 <body>
-    <div class="app-container">
-        <div class="header">
-            <h1>🏠 FamilyLife</h1>
-            <div class="user-info">
-                <div class="user-profile">
-                    <div class="avatar">M</div>
-                    <span>Mathieu</span>
-                </div>
-                <div style="font-size: 0.9rem; opacity: 0.8;">📱 Synchronisé</div>
-                <div class="user-profile">
-                    <div class="avatar" style="background: linear-gradient(45deg, #a8edea, #fed6e3);">S</div>
-                    <span>Steph</span>
-                </div>
-            </div>
-        </div>
+<div class="app-container">
+  <div class="header">
+    <h1>🏠 FamilyLife</h1>
+    <div class="user-info">
+      <div class="user-profile"><div class="avatar">M</div><span>Mathieu</span></div>
+      <div style="font-size:.9rem;opacity:.8;">📱 Synchronisé</div>
+      <div class="user-profile"><div class="avatar" style="background:linear-gradient(45deg,#a8edea,#fed6e3);">S</div><span>Steph</span></div>
+    </div>
+  </div>
 
-        <div class="content">
-            <!-- Planning Tab -->
-            <div id="planning-tab" class="tab-content active">
-                <div class="week-overview">
-                    <h3>📅 Semaine en un coup d'œil</h3>
-                    <div id="planning-days">
-                        <div style="text-align: center; padding: 40px; color: #666; font-style: italic;">
-                            📅 Aucun événement pour cette semaine<br>
-                            <span style="font-size: 0.8rem;">Utilisez le bouton + pour ajouter des événements</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Health Tab -->
-            <div id="health-tab" class="tab-content">
-                <div class="health-section">
-                    <h3>🏥 Santé & Vaccins</h3>
-                    
-                    <div class="child-health">
-                        <h4>👧 Adèle (7 ans)</h4>
-                        <div style="text-align: center; padding: 20px; color: #666; font-style: italic;">
-                            Aucune donnée de santé enregistrée
-                        </div>
-                    </div>
-
-                    <div class="child-health">
-                        <h4>👶 Albane (10 mois)</h4>
-                        <div style="text-align: center; padding: 20px; color: #666; font-style: italic;">
-                            Aucune donnée de santé enregistrée
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Shopping Tab -->
-            <div id="shopping-tab" class="tab-content">
-                <div class="shopping-list">
-                    <h3>🛒 Liste de courses partagée</h3>
-                    
-                    <div class="add-item">
-                        <input type="text" id="new-item" placeholder="Ajouter un article..." />
-                        <button class="add-btn" onclick="addShoppingItem()">+</button>
-                    </div>
-
-                    <div id="shopping-items">
-                        <div style="text-align: center; padding: 40px; color: #666; font-style: italic;">
-                            🛒 Liste vide<br>
-                            <span style="font-size: 0.8rem;">Ajoutez des articles ci-dessus</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Documents Tab -->
-            <div id="documents-tab" class="tab-content">
-                <div class="documents-section">
-                    <h3>📋 Documents partagés</h3>
-                    
-                    <!-- Upload Section -->
-                    <div style="background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); border-radius: 10px; padding: 20px; margin-bottom: 20px; border: 2px dashed #667eea;">
-                        <h4 style="margin-bottom: 15px; color: #2c3e50; text-align: center;">📤 Télécharger un document</h4>
-                        <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <input type="file" id="file-upload" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" style="display: none;" onchange="handleFileUpload(this)">
-                            <button onclick="document.getElementById('file-upload').click()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 20px; border-radius: 25px; cursor: pointer; font-weight: bold; transition: transform 0.2s;">
-                                📎 Choisir un fichier
-                            </button>
-                            <div style="text-align: center; font-size: 0.8rem; color: #666;">
-                                Formats acceptés: PDF, Images, Word
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="documents-list">
-                        <div style="text-align: center; padding: 40px; color: #666; font-style: italic;">
-                            📄 Aucun document<br>
-                            <span style="font-size: 0.8rem;">Utilisez la section de téléchargement ci-dessus</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Todo Tab -->
-            <div id="todo-tab" class="tab-content">
-                <div class="todo-section">
-                    <h3>✅ To-do parentale</h3>
-                    
-                    <div id="todo-list">
-                        <div style="text-align: center; padding: 40px; color: #666; font-style: italic;">
-                            ✅ Aucune tâche<br>
-                            <span style="font-size: 0.8rem;">Utilisez le bouton + pour ajouter des tâches</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="bottom-nav">
-            <div class="nav-item" onclick="switchTab('planning')">
-                <div class="nav-icon">📅</div>
-                <div class="nav-label">Planning</div>
-                <div id="planning-badge" class="notification-badge">0</div>
-            </div>
-            <div class="nav-item" onclick="switchTab('health')">
-                <div class="nav-icon">🏥</div>
-                <div class="nav-label">Santé</div>
-                <div id="health-badge" class="notification-badge">0</div>
-            </div>
-            <div class="nav-item" onclick="switchTab('shopping')">
-                <div class="nav-icon">🛒</div>
-                <div class="nav-label">Courses</div>
-                <div id="shopping-badge" class="notification-badge">0</div>
-            </div>
-            <div class="nav-item" onclick="switchTab('documents')">
-                <div class="nav-icon">📋</div>
-                <div class="nav-label">Documents</div>
-                <div id="documents-badge" class="notification-badge">0</div>
-            </div>
-            <div class="nav-item" onclick="switchTab('todo')">
-                <div class="nav-icon">✅</div>
-                <div class="nav-label">To-do</div>
-                <div id="todo-badge" class="notification-badge">0</div>
-            </div>
-        </div>
-
-        <button class="floating-add" onclick="openAddModal()">+</button>
+  <div class="content">
+    <!-- Planning Tab -->
+    <div id="planning-tab" class="tab-content active">
+      <div class="week-overview">
+        <h3>📅 Semaine en un coup d'œil</h3>
+        <div id="planning-days"></div>
+      </div>
     </div>
 
-    <!-- Modal for adding new items -->
-    <div id="add-modal" class="modal">
-        <div class="modal-content">
-            <h3>➕ Ajouter un élément</h3>
-            <div class="form-group">
-                <label>Type :</label>
-                <select id="item-type">
-                    <option value="event">Événement</option>
-                    <option value="medical">Rendez-vous médical</option>
-                    <option value="task">Tâche</option>
-                    <option value="document">Document</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Titre :</label>
-                <input type="text" id="item-title" placeholder="Ex: RDV pédiatre..." />
-            </div>
-            <div class="form-group">
-                <label>Date :</label>
-                <input type="date" id="item-date" />
-            </div>
-            <div class="form-group">
-                <label>Assigné à :</label>
-                <select id="item-assignee">
-                    <option value="both">Mathieu & Steph</option>
-                    <option value="mathieu">Mathieu</option>
-                    <option value="steph">Steph</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Notes :</label>
-                <textarea id="item-notes" rows="3" placeholder="Détails supplémentaires..."></textarea>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeAddModal()">Annuler</button>
-                <button class="btn btn-primary" onclick="addNewItem()">Ajouter</button>
-            </div>
+    <!-- Health Tab -->
+    <div id="health-tab" class="tab-content">
+      <div class="health-section">
+        <h3>🏥 Santé & Vaccins</h3>
+        <div class="child-health">
+          <h4>👧 Adèle (7 ans)</h4>
+          <div style="text-align:center;padding:20px;color:#666;font-style:italic;">
+            Aucune donnée de santé enregistrée
+          </div>
         </div>
-    </div>
-
-    <!-- Document Preview Modal -->
-    <div id="doc-preview" class="doc-preview">
-        <div class="doc-preview-content">
-            <button class="close-preview" onclick="closeDocPreview()">×</button>
-            <div id="doc-preview-body">
-                <!-- Document content will be loaded here -->
-            </div>
+        <div class="child-health">
+          <h4>👶 Albane (10 mois)</h4>
+          <div style="text-align:center;padding:20px;color:#666;font-style:italic;">
+            Aucune donnée de santé enregistrée
+          </div>
         </div>
+      </div>
     </div>
 
-    <!-- Notification -->
-    <div id="notification" class="notification">
-        <span id="notification-text"></span>
+    <!-- Shopping Tab -->
+    <div id="shopping-tab" class="tab-content">
+      <div class="shopping-list">
+        <h3>🛒 Liste de courses partagée</h3>
+        <div class="add-item">
+          <input type="text" id="new-item" placeholder="Ajouter un article..."/>
+          <button class="add-btn" onclick="addShoppingItem()">+</button>
+        </div>
+        <div id="shopping-items"></div>
+      </div>
     </div>
 
-    <script>
-        // Global variables for notifications
-        let notificationCounts = {
-            planning: 0,
-            health: 0,
-            shopping: 0,
-            documents: 0,
-            todo: 0
-        };
+    <!-- Documents Tab -->
+    <div id="documents-tab" class="tab-content">
+      <div class="documents-section">
+        <h3>📋 Documents partagés</h3>
+        <div style="background:linear-gradient(135deg,#e3f2fd 0%,#f3e5f5 100%);border-radius:10px;padding:20px;margin-bottom:20px;border:2px dashed #667eea;">
+          <h4 style="margin-bottom:15px;color:#2c3e50;text-align:center;">📤 Télécharger un document</h4>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <input type="file" id="file-upload" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" style="display:none;" onchange="handleFileUpload(this)">
+            <button onclick="document.getElementById('file-upload').click()" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;border:none;padding:12px 20px;border-radius:25px;cursor:pointer;font-weight:bold;transition:transform .2s;">📎 Choisir un fichier</button>
+            <div style="text-align:center;font-size:.8rem;color:#666;">Formats acceptés: PDF, Images, Word</div>
+          </div>
+        </div>
+        <div id="documents-list"></div>
+      </div>
+    </div>
 
-        // Navigation between tabs
-        function switchTab(tabName) {
-            // Hide all tab contents
-            const tabs = document.querySelectorAll('.tab-content');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            
-            // Show selected tab
-            document.getElementById(tabName + '-tab').classList.add('active');
-            
-            // Update nav items
-            const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => item.classList.remove('active'));
-            
-            // Find and activate the correct nav item
-            navItems.forEach(item => {
-                if (item.onclick && item.onclick.toString().includes(tabName)) {
-                    item.classList.add('active');
-                    // Clear notification for this tab when opened
-                    if (notificationCounts[tabName] > 0) {
-                        notificationCounts[tabName] = 0;
-                        updateNotificationBadge(tabName);
-                    }
-                }
-            });
-        }
+    <!-- Todo Tab -->
+    <div id="todo-tab" class="tab-content">
+      <div class="todo-section">
+        <h3>✅ To-do parentale</h3>
+        <div id="todo-list"></div>
+      </div>
+    </div>
+  </div>
 
-        // Update notification badges
-        function updateNotificationBadge(tabName) {
-            const badge = document.getElementById(tabName + '-badge');
-            if (badge) {
-                if (notificationCounts[tabName] > 0) {
-                    badge.textContent = notificationCounts[tabName];
-                    badge.style.display = 'flex';
-                } else {
-                    badge.style.display = 'none';
-                }
-            }
-        }
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="switchTab('planning')"><div class="nav-icon">📅</div><div class="nav-label">Planning</div><div id="planning-badge" class="notification-badge">0</div></div>
+    <div class="nav-item" onclick="switchTab('health')"><div class="nav-icon">🏥</div><div class="nav-label">Santé</div><div id="health-badge" class="notification-badge">0</div></div>
+    <div class="nav-item" onclick="switchTab('shopping')"><div class="nav-icon">🛒</div><div class="nav-label">Courses</div><div id="shopping-badge" class="notification-badge">0</div></div>
+    <div class="nav-item" onclick="switchTab('documents')"><div class="nav-icon">📋</div><div class="nav-label">Documents</div><div id="documents-badge" class="notification-badge">0</div></div>
+    <div class="nav-item" onclick="switchTab('todo')"><div class="nav-icon">✅</div><div class="nav-label">To-do</div><div id="todo-badge" class="notification-badge">0</div></div>
+  </div>
 
-        // Add notification to tab
-        function addNotificationToTab(tabName) {
-            notificationCounts[tabName]++;
-            updateNotificationBadge(tabName);
-        }
+  <button class="floating-add" onclick="openAddModal()">+</button>
+</div>
 
-        // Shopping list functions
-        function addShoppingItem() {
-            const input = document.getElementById('new-item');
-            const text = input.value.trim();
-            
-            if (text) {
-                const itemsContainer = document.getElementById('shopping-items');
-                
-                // Remove empty message if present
-                const emptyMessage = itemsContainer.querySelector('div[style*="text-align: center"]');
-                if (emptyMessage) {
-                    emptyMessage.remove();
-                }
-                
-                const newItem = document.createElement('div');
-                newItem.className = 'list-item';
-                newItem.innerHTML = `
-                    <input type="checkbox" onchange="toggleItem(this)" />
-                    <span>${text}</span>
-                    <span class="category-tag groceries">Courses</span>
-                `;
-                itemsContainer.appendChild(newItem);
-                input.value = '';
-                showNotification('🛒 Article ajouté à la liste !');
-            }
-        }
+<!-- Modal add -->
+<div id="add-modal" class="modal">
+  <div class="modal-content">
+    <h3>➕ Ajouter un élément</h3>
+    <div class="form-group">
+      <label>Type :</label>
+      <select id="item-type">
+        <option value="event">Événement</option>
+        <option value="medical">Rendez-vous médical</option>
+        <option value="task">Tâche</option>
+        <option value="document">Document</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Titre :</label>
+      <input type="text" id="item-title" placeholder="Ex: RDV pédiatre..."/>
+    </div>
+    <div class="form-group">
+      <label>Date :</label>
+      <input type="date" id="item-date"/>
+    </div>
+    <div class="form-group">
+      <label>Assigné à :</label>
+      <select id="item-assignee">
+        <option value="both">Mathieu & Steph</option>
+        <option value="mathieu">Mathieu</option>
+        <option value="steph">Steph</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Notes :</label>
+      <textarea id="item-notes" rows="3" placeholder="Détails supplémentaires..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeAddModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="addNewItem()">Ajouter</button>
+    </div>
+  </div>
+</div>
 
-        function toggleItem(checkbox) {
-            const listItem = checkbox.parentElement;
-            if (checkbox.checked) {
-                listItem.classList.add('completed');
-                showNotification('Article coché !');
-            } else {
-                listItem.classList.remove('completed');
-            }
-        }
+<!-- Doc preview -->
+<div id="doc-preview" class="doc-preview">
+  <div class="doc-preview-content">
+    <button class="close-preview" onclick="closeDocPreview()">×</button>
+    <div id="doc-preview-body"></div>
+  </div>
+</div>
 
-        // Todo functions
-        function toggleTodo(checkbox) {
-            const todoItem = checkbox.parentElement;
-            if (checkbox.checked) {
-                todoItem.style.opacity = '0.6';
-                todoItem.querySelector('div div').style.textDecoration = 'line-through';
-                showNotification('Tâche terminée !');
-            } else {
-                todoItem.style.opacity = '1';
-                todoItem.querySelector('div div').style.textDecoration = 'none';
-            }
-        }
+<!-- Notification -->
+<div id="notification" class="notification"><span id="notification-text"></span></div>
 
-        // Modal functions
-        function openAddModal() {
-            document.getElementById('add-modal').style.display = 'block';
-        }
+<script>
+/* ======= Données & Persistance ======= */
+const STORAGE_KEY = 'familylife_db_v1';
+const USER = 'mathieu'; // ⚠️ pour une vraie app multi-utilisateurs, ceci viendrait d’une auth
+const OTHER = 'steph';
 
-        function closeAddModal() {
-            document.getElementById('add-modal').style.display = 'none';
-            // Reset form
-            document.getElementById('item-title').value = '';
-            document.getElementById('item-date').value = '';
-            document.getElementById('item-notes').value = '';
-        }
+let DB = loadDB();
 
-        function addNewItem() {
-            const title = document.getElementById('item-title').value.trim();
-            const type = document.getElementById('item-type').value;
-            const date = document.getElementById('item-date').value;
-            const assignee = document.getElementById('item-assignee').value;
-            const notes = document.getElementById('item-notes').value.trim();
+function loadDB(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return {events:[],tasks:[],docs:[],shopping:[]};
+    const parsed = JSON.parse(raw);
+    return {events:[],tasks:[],docs:[],shopping:[], ...parsed};
+  }catch(e){
+    console.warn('DB load error', e);
+    return {events:[],tasks:[],docs:[],shopping:[]};
+  }
+}
+function saveDB(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
+  // ping pour déclencher l’événement "storage" sur d’autres onglets
+  localStorage.setItem('familylife_ping', String(Date.now()));
+}
 
-            if (title && date) {
-                const formattedDate = new Date(date).toLocaleDateString('fr-FR', { 
-                    weekday: 'long', 
-                    day: 'numeric', 
-                    month: 'long' 
-                });
-                
-                if (type === 'event') {
-                    // Add to planning
-                    const planningContainer = document.getElementById('planning-days');
-                    
-                    // Remove empty message if present
-                    const emptyMessage = planningContainer.querySelector('div[style*="text-align: center"]');
-                    if (emptyMessage) {
-                        emptyMessage.remove();
-                    }
-                    
-                    // Find or create day card
-                    let dayCard = null;
-                    const existingCards = planningContainer.querySelectorAll('.day-card');
-                    existingCards.forEach(card => {
-                        if (card.querySelector('h4').textContent.includes(formattedDate.split(' ')[1] + ' ' + formattedDate.split(' ')[2])) {
-                            dayCard = card;
-                        }
-                    });
-                    
-                    if (!dayCard) {
-                        dayCard = document.createElement('div');
-                        dayCard.className = 'day-card';
-                        dayCard.innerHTML = `<h4>${formattedDate}</h4>`;
-                        planningContainer.appendChild(dayCard);
-                    }
-                    
-                    // Add event
-                    const eventDiv = document.createElement('div');
-                    eventDiv.className = 'event';
-                    eventDiv.innerHTML = `
-                        <div class="event-dot work"></div>
-                        ${title}${notes ? ' - ' + notes : ''}
-                    `;
-                    dayCard.appendChild(eventDiv);
-                    addNotificationToTab('planning');
-                    
-                } else if (type === 'task') {
-                    // Add to todo
-                    const todoContainer = document.getElementById('todo-list');
-                    
-                    // Remove empty message if present
-                    const emptyMessage = todoContainer.querySelector('div[style*="text-align: center"]');
-                    if (emptyMessage) {
-                        emptyMessage.remove();
-                    }
-                    
-                    const todoItem = document.createElement('div');
-                    todoItem.className = 'todo-item';
-                    todoItem.innerHTML = `
-                        <input type="checkbox" onchange="toggleTodo(this)" />
-                        <div>
-                            <div style="font-weight: bold;">${title}</div>
-                            <div style="font-size: 0.8rem; color: #666;">${notes || 'Échéance: ' + formattedDate}</div>
-                        </div>
-                        <div class="assignee">${assignee === 'both' ? 'Tous' : assignee === 'mathieu' ? 'Mathieu' : 'Steph'}</div>
-                    `;
-                    todoContainer.appendChild(todoItem);
-                    addNotificationToTab('todo');
-                    
-                } else if (type === 'medical') {
-                    // Add to health section
-                    addNotificationToTab('health');
-                    showNotification('🏥 Rendez-vous médical ajouté !');
-                }
-                
-                closeAddModal();
-                showNotification('✅ Élément ajouté avec succès !');
-                
-            } else {
-                alert('⚠️ Veuillez remplir au moins le titre et la date.');
-            }
-        }
+/* ======= Utilitaires ======= */
+function uuid(){
+  return (crypto && crypto.randomUUID) ? crypto.randomUUID() : 'id_'+Math.random().toString(36).slice(2);
+}
+function ymd(dateStr){ // retourne YYYY-MM-DD
+  if(!dateStr) return new Date().toISOString().split('T')[0];
+  return new Date(dateStr+'T00:00:00').toISOString().split('T')[0];
+}
+function formatHuman(dateStr){
+  const d = new Date(dateStr+'T00:00:00');
+  return d.toLocaleDateString('fr-FR',{weekday:'long', day:'numeric', month:'long'});
+}
+function thisWeekRange(){
+  const d = new Date();
+  const day = d.getDay(); // 0=dim
+  const diffToMon = (day===0?6:day-1);
+  const monday = new Date(d); monday.setDate(d.getDate()-diffToMon);
+  const sunday = new Date(monday); sunday.setDate(monday.getDate()+6);
+  return {from: ymd(monday.toISOString().split('T')[0]), to: ymd(sunday.toISOString().split('T')[0])};
+}
+function inRange(ymdStr, from, to){ return ymdStr >= from && ymdStr <= to; }
 
-        // Notification function
-        function showNotification(message) {
-            const notification = document.getElementById('notification');
-            const notificationText = document.getElementById('notification-text');
-            
-            notificationText.textContent = message;
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
+/* ======= Notifications visuelles ======= */
+let notificationCounts = {planning:0,health:0,shopping:0,documents:0,todo:0};
 
-        // File upload handler
-        function handleFileUpload(input) {
-            const file = input.files[0];
-            if (file) {
-                const fileName = file.name;
-                const fileSize = (file.size / 1024 / 1024).toFixed(2);
-                showNotification(`📎 ${fileName} (${fileSize} MB) téléchargé !`);
-                
-                // Remove empty message if present
-                const docContainer = document.getElementById('documents-list');
-                const emptyMessage = docContainer.querySelector('div[style*="text-align: center"]');
-                if (emptyMessage) {
-                    emptyMessage.remove();
-                }
-                
-                // Simulate adding to document list
-                setTimeout(() => {
-                    const newDoc = document.createElement('div');
-                    newDoc.className = 'doc-item';
-                    const fileExtension = fileName.split('.').pop().toLowerCase();
-                    let iconClass = 'pdf';
-                    let iconEmoji = '📄';
-                    if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
-                        iconClass = 'image';
-                        iconEmoji = '🖼️';
-                    } else if (['doc', 'docx'].includes(fileExtension)) {
-                        iconClass = 'school';
-                        iconEmoji = '📝';
-                    }
-                    
-                    newDoc.innerHTML = `
-                        <div class="doc-icon ${iconClass}">${iconEmoji}</div>
-                        <div>
-                            <div style="font-weight: bold;">${fileName}</div>
-                            <div style="font-size: 0.8rem; color: #666;">Ajouté le ${new Date().toLocaleDateString('fr-FR')}</div>
-                        </div>
-                    `;
-                    
-                    // Add click handler for document preview
-                    newDoc.addEventListener('click', function() {
-                        openDocPreview(fileName, fileExtension);
-                    });
-                    
-                    docContainer.appendChild(newDoc);
-                    addNotificationToTab('documents');
-                }, 1000);
-            }
-        }
+function showNotification(message){
+  const n = document.getElementById('notification');
+  const t = document.getElementById('notification-text');
+  t.textContent = message;
+  n.classList.add('show');
+  setTimeout(()=> n.classList.remove('show'), 3000);
+}
+function updateNotificationBadge(tabName){
+  const badge = document.getElementById(tabName+'-badge');
+  if(!badge) return;
+  if(notificationCounts[tabName]>0){
+    badge.textContent = notificationCounts[tabName];
+    badge.style.display = 'flex';
+  }else{
+    badge.style.display = 'none';
+  }
+}
+function addNotificationToTab(tabName){
+  notificationCounts[tabName]++;
+  updateNotificationBadge(tabName);
+}
 
-        // Document preview functions
-        function openDocPreview(fileName, fileExtension) {
-            const preview = document.getElementById('doc-preview');
-            const previewBody = document.getElementById('doc-preview-body');
-            
-            let content = '';
-            
-            if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
-                content = `
-                    <h3>🖼️ ${fileName}</h3>
-                    <div style="text-align: center; padding: 20px;">
-                        <div style="background: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 10px; padding: 40px; margin: 20px 0;">
-                            <div style="font-size: 3rem; margin-bottom: 10px;">📷</div>
-                            <p>Aperçu de l'image</p>
-                            <p style="font-size: 0.8rem; color: #666;">Format: ${fileExtension.toUpperCase()}</p>
-                        </div>
-                        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
-                            <button onclick="showNotification('📱 Partage en cours...')" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Partager</button>
-                            <button onclick="showNotification('💾 Téléchargement...')" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Télécharger</button>
-                        </div>
-                    </div>
-                `;
-            } else if (fileExtension === 'pdf') {
-                content = `
-                    <h3>📄 ${fileName}</h3>
-                    <div style="text-align: center; padding: 20px;">
-                        <div style="background: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 10px; padding: 40px; margin: 20px 0;">
-                            <div style="font-size: 3rem; margin-bottom: 10px;">📋</div>
-                            <p>Document PDF</p>
-                            <p style="font-size: 0.8rem; color: #666;">Cliquez pour ouvrir dans une nouvelle fenêtre</p>
-                        </div>
-                        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
-                            <button onclick="showNotification('📱 Partage en cours...')" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Partager</button>
-                            <button onclick="showNotification('💾 Téléchargement...')" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Télécharger</button>
-                            <button onclick="showNotification('🖨️ Impression...')" style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Imprimer</button>
-                        </div>
-                    </div>
-                `;
-            } else {
-                content = `
-                    <h3>📝 ${fileName}</h3>
-                    <div style="text-align: center; padding: 20px;">
-                        <div style="background: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 10px; padding: 40px; margin: 20px 0;">
-                            <div style="font-size: 3rem; margin-bottom: 10px;">📄</div>
-                            <p>Document ${fileExtension.toUpperCase()}</p>
-                            <p style="font-size: 0.8rem; color: #666;">Aperçu non disponible</p>
-                        </div>
-                        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
-                            <button onclick="showNotification('📱 Partage en cours...')" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Partager</button>
-                            <button onclick="showNotification('💾 Téléchargement...')" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Télécharger</button>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            previewBody.innerHTML = content;
-            preview.style.display = 'flex';
-        }
+/* ======= Navigation ======= */
+function switchTab(tab){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.getElementById(tab+'-tab').classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(item=>{
+    if(item.onclick && item.onclick.toString().includes(tab)) item.classList.add('active');
+  });
+  if(notificationCounts[tab]>0){
+    notificationCounts[tab]=0;
+    updateNotificationBadge(tab);
+  }
+}
 
-        function closeDocPreview() {
-            document.getElementById('doc-preview').style.display = 'none';
-        }
+/* ======= Rendu Planning ======= */
+function renderPlanning(){
+  const container = document.getElementById('planning-days');
+  container.innerHTML = '';
+  const {from, to} = thisWeekRange();
 
-        // Add event listener for Enter key in shopping input
-        document.getElementById('new-item').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                addShoppingItem();
-            }
-        });
+  const events = DB.events
+    .filter(ev=> inRange(ev.date, from, to))
+    .sort((a,b)=> a.date.localeCompare(b.date));
 
-        // Close modal when clicking outside
-        document.getElementById('add-modal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeAddModal();
-            }
-        });
+  if(events.length===0){
+    container.innerHTML = `<div style="text-align:center;padding:40px;color:#666;font-style:italic;">
+      📅 Aucun événement pour cette semaine<br><span style="font-size:.8rem;">Utilisez le bouton + pour ajouter des événements</span>
+    </div>`;
+    return;
+  }
 
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set today's date as default in modal
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('item-date').value = today;
-            
-            // Initialize the first tab as active
-            document.querySelector('.nav-item').classList.add('active');
-            
-            // Show welcome notification
-            setTimeout(() => {
-                showNotification('👋 Bienvenue dans FamilyLife !');
-            }, 1000);
-        });
+  // group by date
+  const map = new Map();
+  events.forEach(ev=>{
+    if(!map.has(ev.date)) map.set(ev.date, []);
+    map.get(ev.date).push(ev);
+  });
 
-        // Close document preview when clicking outside
-        document.getElementById('doc-preview').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeDocPreview();
-            }
-        });
+  for(const [dateKey, list] of map.entries()){
+    const dayCard = document.createElement('div');
+    dayCard.className = 'day-card';
+    dayCard.innerHTML = `<h4>${formatHuman(dateKey)}</h4>`;
+    list.forEach(ev=>{
+      const dotClass = ev.type==='medical' ? 'medical' : 'work';
+      const assigneeTxt = ev.assignee==='both'?'Tous':(ev.assignee==='mathieu'?'Mathieu':'Steph');
+      const item = document.createElement('div');
+      item.className = 'event';
+      item.innerHTML = `<div class="event-dot ${dotClass}"></div>
+        <div><strong>${ev.title}</strong>${ev.notes? ' – '+ev.notes:''} <span style="opacity:.7;font-size:.8rem;">(${assigneeTxt})</span></div>`;
+      dayCard.appendChild(item);
+    });
+    container.appendChild(dayCard);
+  }
+}
 
-        // Simulate real-time updates
-        setInterval(() => {
-            // Simulate sync indicator
-            const header = document.querySelector('.header h1');
-            header.innerHTML = '🏠 FamilyLife <span style="font-size: 0.7rem; opacity: 0.7;">🔄</span>';
-            
-            setTimeout(() => {
-                header.innerHTML = '🏠 FamilyLife <span style="font-size: 0.7rem; opacity: 0.7;">✓</span>';
-            }, 500);
-            
-            setTimeout(() => {
-                header.innerHTML = '🏠 FamilyLife';
-            }, 2000);
-        }, 30000);
+/* ======= Rendu To-do ======= */
+function renderTodo(){
+  const container = document.getElementById('todo-list');
+  container.innerHTML = '';
+  const tasks = [...DB.tasks].sort((a,b)=> a.date.localeCompare(b.date));
+  if(tasks.length===0){
+    container.innerHTML = `<div style="text-align:center;padding:40px;color:#666;font-style:italic;">
+      ✅ Aucune tâche<br><span style="font-size:.8rem;">Utilisez le bouton + pour ajouter des tâches</span>
+    </div>`;
+    return;
+  }
+  tasks.forEach(t=>{
+    const el = document.createElement('div');
+    el.className = 'todo-item';
+    el.innerHTML = `
+      <input type="checkbox" ${t.done?'checked':''} onchange="toggleTodo(this,'${t.id}')"/>
+      <div>
+        <div style="font-weight:bold;${t.done?'text-decoration:line-through;opacity:.8;':''}">${t.title}</div>
+        <div style="font-size:.8rem;color:#666;">${t.notes || ('Échéance: '+formatHuman(t.date))}</div>
+      </div>
+      <div class="assignee">${t.assignee==='both'?'Tous':(t.assignee==='mathieu'?'Mathieu':'Steph')}</div>`;
+    container.appendChild(el);
+  });
+}
+function toggleTodo(cb,id){
+  const t = DB.tasks.find(x=>x.id===id);
+  if(!t) return;
+  t.done = cb.checked;
+  saveDB();
+  showNotification(cb.checked?'Tâche terminée !':'Tâche réouverte.');
+  renderTodo();
+}
 
-    </script>
+/* ======= Rendu Courses ======= */
+function renderShopping(){
+  const container = document.getElementById('shopping-items');
+  container.innerHTML = '';
+  if(DB.shopping.length===0){
+    container.innerHTML = `<div style="text-align:center;padding:40px;color:#666;font-style:italic;">
+      🛒 Liste vide<br><span style="font-size:.8rem;">Ajoutez des articles ci-dessus</span>
+    </div>`;
+    return;
+  }
+  DB.shopping.forEach(item=>{
+    const el = document.createElement('div');
+    el.className = 'list-item'+(item.done?' completed':'');
+    el.innerHTML = `
+      <input type="checkbox" ${item.done?'checked':''} onchange="toggleItem(this,'${item.id}')" />
+      <span>${item.text}</span>
+      <span class="category-tag groceries">Courses</span>`;
+    container.appendChild(el);
+  });
+}
+function addShoppingItem(){
+  const input = document.getElementById('new-item');
+  const text = input.value.trim();
+  if(!text) return;
+  DB.shopping.push({id:uuid(), text, done:false, createdAt:Date.now()});
+  saveDB();
+  input.value='';
+  renderShopping();
+  showNotification('🛒 Article ajouté à la liste !');
+  addNotificationToTab('shopping');
+  broadcast({type:'shopping-added'});
+}
+function toggleItem(cb,id){
+  const it = DB.shopping.find(x=>x.id===id);
+  if(!it) return;
+  it.done = cb.checked;
+  saveDB();
+  showNotification(cb.checked?'Article coché !':'Article décoché.');
+  renderShopping();
+}
+
+/* ======= Documents ======= */
+function renderDocuments(){
+  const docContainer = document.getElementById('documents-list');
+  docContainer.innerHTML = '';
+  if(DB.docs.length===0){
+    docContainer.innerHTML = `<div style="text-align:center;padding:40px;color:#666;font-style:italic;">
+      📄 Aucun document<br><span style="font-size:.8rem;">Utilisez la section de téléchargement ci-dessus</span>
+    </div>`;
+    return;
+  }
+  DB.docs.forEach(d=>{
+    const newDoc = document.createElement('div');
+    newDoc.className = 'doc-item';
+    const iconClass = d.kind==='image'?'image':(d.kind==='pdf'?'pdf':'school');
+    const iconEmoji = d.kind==='image'?'🖼️':(d.kind==='pdf'?'📄':'📝');
+    newDoc.innerHTML = `
+      <div class="doc-icon ${iconClass}">${iconEmoji}</div>
+      <div>
+        <div style="font-weight:bold;">${d.name}</div>
+        <div style="font-size:.8rem;color:#666;">Ajouté le ${new Date(d.addedAt).toLocaleDateString('fr-FR')}</div>
+      </div>`;
+    newDoc.addEventListener('click', ()=>openDocPreview(d.name, d.ext));
+    docContainer.appendChild(newDoc);
+  });
+}
+function handleFileUpload(input){
+  const file = input.files[0];
+  if(!file) return;
+  const fileName = file.name;
+  const ext = fileName.split('.').pop().toLowerCase();
+  const sizeMB = (file.size/1024/1024).toFixed(2);
+  const kind = ['jpg','jpeg','png','gif','webp'].includes(ext)?'image':(ext==='pdf'?'pdf':'doc');
+  DB.docs.push({id:uuid(), name:fileName, ext, kind, sizeMB, addedAt:Date.now()});
+  saveDB();
+  renderDocuments();
+  showNotification(`📎 ${fileName} (${sizeMB} MB) téléchargé !`);
+  addNotificationToTab('documents');
+  broadcast({type:'doc-added', payload:{name:fileName}});
+  input.value='';
+}
+function openDocPreview(fileName, ext){
+  const preview = document.getElementById('doc-preview');
+  const body = document.getElementById('doc-preview-body');
+  let content='';
+  if(['jpg','jpeg','png','gif','webp'].includes(ext)){
+    content = `<h3>🖼️ ${fileName}</h3>
+      <div style="text-align:center;padding:20px;">
+        <div style="background:#f8f9fa;border:2px dashed #dee2e6;border-radius:10px;padding:40px;margin:20px 0;">
+          <div style="font-size:3rem;margin-bottom:10px;">📷</div>
+          <p>Aperçu de l'image</p>
+          <p style="font-size:.8rem;color:#666;">Format: ${ext.toUpperCase()}</p>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;">
+          <button onclick="showNotification('📱 Partage en cours...')" style="background:#28a745;color:#fff;border:none;padding:8px 16px;border-radius:5px;cursor:pointer;">Partager</button>
+          <button onclick="showNotification('💾 Téléchargement...')" style="background:#007bff;color:#fff;border:none;padding:8px 16px;border-radius:5px;cursor:pointer;">Télécharger</button>
+        </div>
+      </div>`;
+  }else if(ext==='pdf'){
+    content = `<h3>📄 ${fileName}</h3>
+      <div style="text-align:center;padding:20px;">
+        <div style="background:#f8f9fa;border:2px dashed #dee2e6;border-radius:10px;padding:40px;margin:20px 0;">
+          <div style="font-size:3rem;margin-bottom:10px;">📋</div>
+          <p>Document PDF</p>
+          <p style="font-size:.8rem;color:#666;">Cliquez pour ouvrir dans une nouvelle fenêtre</p>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;">
+          <button onclick="showNotification('📱 Partage en cours...')" style="background:#28a745;color:#fff;border:none;padding:8px 16px;border-radius:5px;cursor:pointer;">Partager</button>
+          <button onclick="showNotification('💾 Téléchargement...')" style="background:#007bff;color:#fff;border:none;padding:8px 16px;border-radius:5px;cursor:pointer;">Télécharger</button>
+          <button onclick="showNotification('🖨️ Impression...')" style="background:#6c757d;color:#fff;border:none;padding:8px 16px;border-radius:5px;cursor:pointer;">Imprimer</button>
+        </div>
+      </div>`;
+  }else{
+    content = `<h3>📝 ${fileName}</h3>
+      <div style="text-align:center;padding:20px;">
+        <div style="background:#f8f9fa;border:2px dashed #dee2e6;border-radius:10px;padding:40px;margin:20px 0;">
+          <div style="font-size:3rem;margin-bottom:10px;">📄</div>
+          <p>Document ${ext.toUpperCase()}</p>
+          <p style="font-size:.8rem;color:#666;">Aperçu non disponible</p>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;">
+          <button onclick="showNotification('📱 Partage en cours...')" style="background:#28a745;color:#fff;border:none;padding:8px 16px;border-radius:5px;cursor:pointer;">Partager</button>
+          <button onclick="showNotification('💾 Téléchargement...')" style="background:#007bff;color:#fff;border:none;padding:8px 16px;border-radius:5px;cursor:pointer;">Télécharger</button>
+        </div>
+      </div>`;
+  }
+  body.innerHTML = content;
+  preview.style.display = 'flex';
+}
+function closeDocPreview(){ document.getElementById('doc-preview').style.display='none'; }
+
+/* ======= Modal ======= */
+function openAddModal(){
+  document.getElementById('add-modal').style.display='block';
+}
+function closeAddModal(){
+  document.getElementById('add-modal').style.display='none';
+  document.getElementById('item-title').value='';
+  document.getElementById('item-date').value=ymd();
+  document.getElementById('item-notes').value='';
+}
+
+/* ======= Ajout d’éléments ======= */
+function addNewItem(){
+  const title = document.getElementById('item-title').value.trim();
+  const type = document.getElementById('item-type').value;
+  const date = ymd(document.getElementById('item-date').value || ymd());
+  const assignee = document.getElementById('item-assignee').value;
+  const notes = document.getElementById('item-notes').value.trim();
+
+  if(!title || !date){ alert('⚠️ Veuillez remplir au moins le titre et la date.'); return; }
+
+  if(type==='event' || type==='medical'){
+    const ev = {id:uuid(), type, title, date, assignee, notes, createdBy:USER, createdAt:Date.now()};
+    DB.events.push(ev);
+    saveDB();
+    renderPlanning();
+    addNotificationToTab('planning');
+    showNotification((type==='medical'?'🏥 ':'📅 ')+ 'Événement ajouté !');
+    notifyOtherUser(ev);
+    broadcast({type:'event-added', payload:ev});
+  }else if(type==='task'){
+    const t = {id:uuid(), title, date, assignee, notes, done:false, createdBy:USER, createdAt:Date.now()};
+    DB.tasks.push(t);
+    saveDB();
+    renderTodo();
+    addNotificationToTab('todo');
+    showNotification('📝 Tâche ajoutée !');
+    notifyOtherUser(t);
+    broadcast({type:'task-added', payload:t});
+  }else if(type==='document'){
+    switchTab('documents');
+    showNotification('➡️ Utilise “Choisir un fichier” pour ajouter un document.');
+  }
+
+  closeAddModal();
+}
+
+/* ======= “Notification” autre personne (simulation) ======= */
+function notifyOtherUser(item){
+  // Simulation : on pousse un message dans une “inbox” locale de l’autre utilisateur
+  const inboxKey = 'familylife_inbox_'+OTHER;
+  const inbox = JSON.parse(localStorage.getItem(inboxKey) || '[]');
+  inbox.push({
+    id: uuid(),
+    from: USER,
+    kind: item.type || 'task',
+    title: item.title,
+    date: item.date,
+    createdAt: Date.now()
+  });
+  localStorage.setItem(inboxKey, JSON.stringify(inbox));
+  // feedback visuel
+  showNotification('📣 Steph a été notifiée.');
+}
+
+/* ======= Sync temps réel (onglets) ======= */
+let bc = null;
+try{ bc = new BroadcastChannel('familylife'); }catch(e){ /* Safari privé, etc. */ }
+function broadcast(msg){ try{ bc && bc.postMessage(msg); }catch(e){} }
+
+if(bc){
+  bc.onmessage = (ev)=>{
+    if(!ev || !ev.data) return;
+    const {type, payload} = ev.data;
+    if(type==='event-added'){
+      mergeEvent(payload);
+      renderPlanning();
+      showNotification('🔄 Nouvel événement reçu.');
+    }else if(type==='task-added'){
+      mergeTask(payload);
+      renderTodo();
+      showNotification('🔄 Nouvelle tâche reçue.');
+    }else if(type==='doc-added'){
+      renderDocuments();
+      showNotification('🔄 Nouveau document reçu.');
+    }else if(type==='shopping-added'){
+      renderShopping();
+    }
+  };
+}
+// Fallback sync via localStorage
+window.addEventListener('storage', (e)=>{
+  if(e.key===STORAGE_KEY){
+    DB = loadDB();
+    renderAll();
+  }
+});
+
+/* ======= Merge helpers (anti-duplication) ======= */
+function mergeEvent(ev){
+  if(!ev) return;
+  if(DB.events.some(x=>x.id===ev.id)) return;
+  DB.events.push(ev);
+  saveDB();
+}
+function mergeTask(t){
+  if(!t) return;
+  if(DB.tasks.some(x=>x.id===t.id)) return;
+  DB.tasks.push(t);
+  saveDB();
+}
+
+/* ======= Entrees clavier / clics hors modales ======= */
+document.getElementById('new-item').addEventListener('keypress', (e)=>{ if(e.key==='Enter') addShoppingItem(); });
+document.getElementById('add-modal').addEventListener('click', (e)=>{ if(e.target===e.currentTarget) closeAddModal(); });
+document.getElementById('doc-preview').addEventListener('click', (e)=>{ if(e.target===e.currentTarget) closeDocPreview(); });
+
+/* ======= “Animation” sync dans l’entête ======= */
+setInterval(()=>{
+  const h = document.querySelector('.header h1');
+  h.innerHTML = '🏠 FamilyLife <span style="font-size:.7rem;opacity:.7;">🔄</span>';
+  setTimeout(()=>{ h.innerHTML = '🏠 FamilyLife <span style="font-size:.7rem;opacity:.7;">✓</span>'; }, 500);
+  setTimeout(()=>{ h.innerHTML = '🏠 FamilyLife'; }, 2000);
+}, 30000);
+
+/* ======= Initialisation ======= */
+function renderAll(){
+  renderPlanning();
+  renderTodo();
+  renderShopping();
+  renderDocuments();
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.getElementById('item-date').value = ymd();
+  document.querySelector('.nav-item').classList.add('active');
+  renderAll();
+  setTimeout(()=> showNotification('👋 Bienvenue dans FamilyLife !'), 800);
+});
+
+</script>
 </body>
 </html>
